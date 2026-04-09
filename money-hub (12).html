@@ -146,12 +146,41 @@ body { font-family: 'Geist', sans-serif; background: var(--bg); color: var(--tex
 /* DIVIDER */
 .divider { border: none; border-top: 1px solid var(--border); margin: 22px 0; }
 
-/* NOTES */
-.note-area { width: 100%; min-height: 260px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; color: var(--text); font-family: 'Geist Mono', monospace; font-size: 12px; line-height: 1.7; resize: vertical; outline: none; transition: border-color 0.15s; margin-bottom: 6px; }
-.note-area:focus { border-color: var(--border2); }
-.note-area::placeholder { color: var(--hint); }
+/* NOTES - rich editor */
+.note-wrap { margin-bottom: 20px; }
+.note-block { margin-bottom: 12px; }
+.note-toolbar { display: flex; gap: 4px; margin-bottom: 8px; flex-wrap: wrap; align-items: center; }
+.note-toolbar button { background: var(--surface2); border: 1px solid var(--border2); border-radius: 5px; color: var(--muted); cursor: pointer; padding: 4px 10px; font-size: 11px; font-weight: 600; font-family: 'Geist', sans-serif; transition: all 0.12s; }
+.note-toolbar button:hover { color: var(--text); border-color: var(--muted); }
+.done-btn { background: var(--green-dim) !important; border-color: var(--green) !important; color: var(--green) !important; }
+.note-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; }
+.note-edit-btn { display: inline-flex; align-items: center; gap: 5px; background: var(--surface2); border: 1px solid var(--border2); border-radius: 7px; color: var(--muted); cursor: pointer; padding: 5px 12px; font-size: 11px; font-weight: 600; font-family: 'Geist', sans-serif; transition: all 0.15s; }
+.note-edit-btn:hover { color: var(--text); border-color: var(--text); background: var(--surface); }
+.note-edit-btn svg { opacity: 0.6; }
+.add-note-btn { display: inline-flex; align-items: center; gap: 6px; background: none; border: 1px dashed var(--border2); border-radius: 8px; color: var(--muted); cursor: pointer; padding: 8px 16px; font-size: 12px; font-weight: 600; font-family: 'Geist', sans-serif; transition: all 0.15s; width: 100%; justify-content: center; margin-top: 4px; }
+.add-note-btn:hover { color: var(--text); border-color: var(--muted); background: var(--surface); }
+.note-area { width: 100%; min-height: 160px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; color: var(--text); font-family: 'Geist', sans-serif; font-size: 13px; line-height: 1.75; outline: none; transition: border-color 0.15s; overflow-y: auto; }
+.note-area[contenteditable="true"] { border-color: var(--border2); min-height: 160px; }
+.note-area[contenteditable="false"] { cursor: default; }
+.note-area[data-placeholder]:empty::before { content: attr(data-placeholder); color: var(--hint); pointer-events: none; display: block; }
+.note-area h1 { font-size: 20px; font-weight: 700; color: var(--text); margin: 10px 0 4px; line-height: 1.2; }
+.note-area h2 { font-size: 15px; font-weight: 600; color: var(--text); margin: 8px 0 2px; }
+.note-area p { margin: 2px 0; color: var(--muted); }
+.note-area ul { padding-left: 20px; color: var(--muted); margin: 2px 0; }
+.note-area li { margin: 1px 0; }
 .save-label { font-size: 10px; color: var(--hint); font-family: 'Geist Mono', monospace; }
 .save-label.ok { color: var(--green); }
+/* Add form */
+.add-form { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; margin-top: 4px; }
+.add-input { flex: 1; min-width: 140px; background: var(--surface); border: 1px solid var(--border2); border-radius: 7px; padding: 8px 12px; color: var(--text); font-family: 'Geist', sans-serif; font-size: 12px; outline: none; }
+.add-input:focus { border-color: var(--gold); }
+.add-input::placeholder { color: var(--hint); }
+.add-btn { background: var(--gold); border: none; border-radius: 7px; padding: 8px 14px; font-size: 12px; font-weight: 600; color: #0f0f0f; cursor: pointer; font-family: 'Geist', sans-serif; white-space: nowrap; }
+.add-btn:hover { opacity: 0.85; }
+.site-card { position: relative; }
+.site-card .del-btn { display: none; position: absolute; top: 8px; right: 8px; background: var(--red-dim); border: 1px solid var(--red); border-radius: 4px; color: var(--red); font-size: 10px; padding: 2px 6px; cursor: pointer; font-family: 'Geist', sans-serif; }
+.site-card:hover .del-btn { display: block; }
+.method-del { float: right; background: var(--red-dim); border: 1px solid var(--red); border-radius: 4px; color: var(--red); font-size: 10px; padding: 2px 6px; cursor: pointer; font-family: 'Geist', sans-serif; margin-left: 8px; }
 
 /* EXTRACTOR */
 .ext-input { width: 100%; min-height: 140px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px; color: var(--text); font-family: 'Geist Mono', monospace; font-size: 12px; line-height: 1.7; resize: vertical; outline: none; transition: border-color 0.15s; margin-bottom: 10px; }
@@ -280,8 +309,7 @@ body { font-family: 'Geist', sans-serif; background: var(--bg); color: var(--tex
   </div>
   <div class="ipanel active" style="padding-top:24px;">
     <div class="label">General notes</div>
-    <textarea class="note-area" id="n-general" placeholder="Ideas, plans, things to try..." oninput="saveNote('n-general')"></textarea>
-    <div class="save-label" id="n-general-lbl">autosaved</div>
+    <div class="note-wrap" id="n-general" data-note-id="n-general" data-placeholder="Ideas, plans, things to try..."></div>
 
   </div>
 </div>
@@ -299,14 +327,6 @@ body { font-family: 'Geist', sans-serif; background: var(--bg); color: var(--tex
     <div class="itab" onclick="itab(this,'youtube','notes')">Notes</div>
   </div>
   <div id="youtube-websites" class="ipanel">
-    <div class="callout callout-teal"><div class="callout-icon">🔗</div><div class="callout-text"><strong>Your saved YouTube websites.</strong> Add any sites you find useful here — edit the HTML to add more site-card entries.</div></div>
-    <div class="label">Saved sites</div>
-    <div class="site-grid">
-      <a class="site-card" href="https://studio.youtube.com" target="_blank"><div class="site-card-name">YouTube Studio</div><div class="site-card-desc">Upload videos, check analytics, manage your channel</div><div class="site-card-url">studio.youtube.com</div></a>
-      <a class="site-card" href="https://vidiq.com" target="_blank"><div class="site-card-name">vidIQ</div><div class="site-card-desc">YouTube keyword research, trending topics, channel analytics</div><div class="site-card-url">vidiq.com</div></a>
-      <a class="site-card" href="https://socialblade.com" target="_blank"><div class="site-card-name">Social Blade</div><div class="site-card-desc">Track growth stats for any YouTube channel</div><div class="site-card-url">socialblade.com</div></a>
-      <a class="site-card" href="https://www.tubebuddy.com" target="_blank"><div class="site-card-name">TubeBuddy</div><div class="site-card-desc">Browser extension for keyword research and tag suggestions</div><div class="site-card-url">tubebuddy.com</div></a>
-    </div>
   </div>
   <div id="youtube-overview" class="ipanel active">
     <div class="callout callout-teal">
@@ -336,64 +356,10 @@ body { font-family: 'Geist', sans-serif; background: var(--bg); color: var(--tex
     </div>
   </div>
   <div id="youtube-methods" class="ipanel">
-    <div class="label">Full production workflow</div>
-    <div class="method">
-      <div class="method-header"><div class="method-title">1. Write your script</div><div class="method-tags"><span class="card-tag cb">AI writing</span></div></div>
-      <div class="method-desc">Use Claude or Gemini with the Script Generator prompt. Aim for 150–200 words (60–90 seconds spoken). Start with a hook that stops the scroll.</div>
-      <div class="method-sites">
-        <a class="method-link" href="https://claude.ai" target="_blank"><div class="method-link-dot" style="background:var(--text)"></div>Claude</a>
-        <a class="method-link" href="https://gemini.google.com" target="_blank"><div class="method-link-dot" style="background:var(--blue)"></div>Gemini</a>
-        <a class="method-link" href="https://chatgpt.com" target="_blank"><div class="method-link-dot" style="background:var(--green)"></div>ChatGPT</a>
-      </div>
-    </div>
-    <div class="method">
-      <div class="method-header"><div class="method-title">2. Generate images</div><div class="method-tags"><span class="card-tag ck">Image gen</span></div></div>
-      <div class="method-desc">Runway ML → Generate → Image → select <strong>Nano Banana 2</strong>. Paste one image prompt per scene. Generate and save 6–10 images.</div>
-      <div class="method-sites">
-        <a class="method-link" href="https://app.runwayml.com" target="_blank"><div class="method-link-dot" style="background:var(--pink)"></div>Runway ML ← main</a>
-        <a class="method-link" href="https://ideogram.ai" target="_blank"><div class="method-link-dot" style="background:var(--purple)"></div>Ideogram</a>
-        <a class="method-link" href="https://leonardo.ai" target="_blank"><div class="method-link-dot" style="background:var(--gold)"></div>Leonardo AI</a>
-      </div>
-    </div>
-    <div class="method">
-      <div class="method-header"><div class="method-title">3. Animate into clips</div><div class="method-tags"><span class="card-tag cp">Video gen</span></div></div>
-      <div class="method-desc">Upload each image + motion prompt (slow push in, pan, etc.). Generate 5–8 second clips. Rotate between platforms to preserve free credits.</div>
-      <div class="method-sites">
-        <a class="method-link" href="https://lumalabs.ai/dream-machine" target="_blank"><div class="method-link-dot" style="background:var(--purple)"></div>Luma AI</a>
-        <a class="method-link" href="https://klingai.com" target="_blank"><div class="method-link-dot" style="background:var(--gold)"></div>Kling AI</a>
-        <a class="method-link" href="https://pika.art" target="_blank"><div class="method-link-dot" style="background:var(--pink)"></div>Pika</a>
-        <a class="method-link" href="https://hailuoai.video" target="_blank"><div class="method-link-dot" style="background:var(--teal)"></div>Hailuo AI</a>
-      </div>
-    </div>
-    <div class="method">
-      <div class="method-header"><div class="method-title">4. Record voiceover</div><div class="method-tags"><span class="card-tag cg">Voice</span></div></div>
-      <div class="method-desc">Paste your script into ElevenLabs → choose a voice → generate → download MP3. Free tier gives 10k characters per month.</div>
-      <div class="method-sites">
-        <a class="method-link" href="https://elevenlabs.io" target="_blank"><div class="method-link-dot" style="background:var(--green)"></div>ElevenLabs ← main</a>
-        <a class="method-link" href="https://murf.ai" target="_blank"><div class="method-link-dot" style="background:var(--blue)"></div>Murf AI</a>
-      </div>
-    </div>
-    <div class="method">
-      <div class="method-header"><div class="method-title">5. Edit in CapCut</div><div class="method-tags"><span class="card-tag co">Editing</span></div></div>
-      <div class="method-desc">Import clips + voiceover. Line up clips to match audio. Add auto-captions, background music (Pixabay), colour grade. Export at 1080×1920 (9:16).</div>
-      <div class="method-sites">
-        <a class="method-link" href="https://www.capcut.com" target="_blank"><div class="method-link-dot" style="background:var(--orange)"></div>CapCut ← main</a>
-        <a class="method-link" href="https://pixabay.com/music/" target="_blank"><div class="method-link-dot" style="background:var(--gold)"></div>Pixabay Music</a>
-      </div>
-    </div>
-    <div class="method">
-      <div class="method-header"><div class="method-title">6. Upload to YouTube</div><div class="method-tags"><span class="card-tag cr">Upload</span></div></div>
-      <div class="method-desc">YouTube Studio → upload → strong hook title → add #Shorts to description → schedule or post. Check analytics after 48h.</div>
-      <div class="method-sites">
-        <a class="method-link" href="https://studio.youtube.com" target="_blank"><div class="method-link-dot" style="background:var(--red)"></div>YouTube Studio</a>
-        <a class="method-link" href="https://socialblade.com" target="_blank"><div class="method-link-dot" style="background:var(--blue)"></div>Social Blade</a>
-      </div>
-    </div>
   </div>
   <div id="youtube-notes" class="ipanel">
     <div class="label">YouTube notes</div>
-    <textarea class="note-area" id="n-youtube" placeholder="Channel ideas, video concepts, things to test, AI responses, scripts..." oninput="saveNote('n-youtube')"></textarea>
-    <div class="save-label" id="n-youtube-lbl">autosaved</div>
+    <div class="note-wrap" id="n-youtube" data-note-id="n-youtube" data-placeholder="Channel ideas, video concepts, things to test, AI responses, scripts..."></div>
   </div>
 </div>
 
@@ -410,14 +376,6 @@ body { font-family: 'Geist', sans-serif; background: var(--bg); color: var(--tex
     <div class="itab" onclick="itab(this,'freelance','notes')">Notes</div>
   </div>
   <div id="freelance-websites" class="ipanel">
-    <div class="callout callout-blue"><div class="callout-icon">🔗</div><div class="callout-text"><strong>Your saved freelancing websites.</strong> Add any platforms or tools you find useful.</div></div>
-    <div class="label">Saved sites</div>
-    <div class="site-grid">
-      <a class="site-card" href="https://fiverr.com" target="_blank"><div class="site-card-name">Fiverr</div><div class="site-card-desc">Create gigs and get found by clients. Best place to start</div><div class="site-card-url">fiverr.com</div></a>
-      <a class="site-card" href="https://upwork.com" target="_blank"><div class="site-card-name">Upwork</div><div class="site-card-desc">Apply to jobs posted by businesses. Lower fees, higher pay</div><div class="site-card-url">upwork.com</div></a>
-      <a class="site-card" href="https://peopleperhour.com" target="_blank"><div class="site-card-name">PeoplePerHour</div><div class="site-card-desc">UK-popular freelance marketplace for web and design work</div><div class="site-card-url">peopleperhour.com</div></a>
-      <a class="site-card" href="https://contra.com" target="_blank"><div class="site-card-name">Contra</div><div class="site-card-desc">Freelance platform with 0% commission — keep everything you earn</div><div class="site-card-url">contra.com</div></a>
-    </div>
   </div>
   <div id="freelance-overview" class="ipanel active">
     <div class="callout callout-blue">
@@ -439,48 +397,10 @@ body { font-family: 'Geist', sans-serif; background: var(--bg); color: var(--tex
     </div>
   </div>
   <div id="freelance-methods" class="ipanel">
-    <div class="label">Platforms to use</div>
-    <div class="method">
-      <div class="method-header"><div class="method-title">Fiverr</div><div class="method-tags"><span class="card-tag cg">Best for beginners</span></div></div>
-      <div class="method-desc">Create a Gig listing what you offer. Clients search and come to you. Takes 20% commission but you don't need to do cold outreach. Best to start here.</div>
-      <div class="method-sites">
-        <a class="method-link" href="https://fiverr.com" target="_blank"><div class="method-link-dot" style="background:var(--green)"></div>Fiverr</a>
-      </div>
-    </div>
-    <div class="method">
-      <div class="method-header"><div class="method-title">Upwork</div><div class="method-tags"><span class="card-tag cb">Higher pay</span></div></div>
-      <div class="method-desc">Browse posted jobs and apply with a short proposal. Lower commission (~10%) than Fiverr. Better for bigger, longer projects.</div>
-      <div class="method-sites">
-        <a class="method-link" href="https://upwork.com" target="_blank"><div class="method-link-dot" style="background:var(--blue)"></div>Upwork</a>
-      </div>
-    </div>
-    <div class="method">
-      <div class="method-header"><div class="method-title">PeoplePerHour</div><div class="method-tags"><span class="card-tag ca">UK popular</span></div></div>
-      <div class="method-desc">Popular in the UK. Similar to Fiverr — list your services, clients contact you. Good for web and design work.</div>
-      <div class="method-sites">
-        <a class="method-link" href="https://peopleperhour.com" target="_blank"><div class="method-link-dot" style="background:var(--orange)"></div>PeoplePerHour</a>
-      </div>
-    </div>
-    <div class="method">
-      <div class="method-header"><div class="method-title">Contra</div><div class="method-tags"><span class="card-tag cp">0% commission</span></div></div>
-      <div class="method-desc">Keep 100% of what you earn. Less traffic than Fiverr but zero fees taken. Good secondary platform once you have reviews elsewhere.</div>
-      <div class="method-sites">
-        <a class="method-link" href="https://contra.com" target="_blank"><div class="method-link-dot" style="background:var(--purple)"></div>Contra</a>
-      </div>
-    </div>
-    <div class="method">
-      <div class="method-header"><div class="method-title">Cold outreach</div><div class="method-tags"><span class="card-tag ct">Direct</span></div></div>
-      <div class="method-desc">Search Google Maps for local businesses with no website or a bad one. Email them a short pitch. No competition, high hit rate — you're targeting people who need it.</div>
-      <div class="method-sites">
-        <a class="method-link" href="https://maps.google.com" target="_blank"><div class="method-link-dot" style="background:var(--teal)"></div>Google Maps</a>
-        <a class="method-link" href="https://linkedin.com" target="_blank"><div class="method-link-dot" style="background:var(--blue)"></div>LinkedIn</a>
-      </div>
-    </div>
   </div>
   <div id="freelance-notes" class="ipanel">
     <div class="label">Freelancing notes</div>
-    <textarea class="note-area" id="n-freelance" placeholder="Gig ideas, client leads, pricing notes, proposals..." oninput="saveNote('n-freelance')"></textarea>
-    <div class="save-label" id="n-freelance-lbl">autosaved</div>
+    <div class="note-wrap" id="n-freelance" data-note-id="n-freelance" data-placeholder="Gig ideas, client leads, pricing notes, proposals..."></div>
   </div>
 </div>
 
@@ -497,15 +417,6 @@ body { font-family: 'Geist', sans-serif; background: var(--bg); color: var(--tex
     <div class="itab" onclick="itab(this,'dropship','notes')">Notes</div>
   </div>
   <div id="dropship-websites" class="ipanel">
-    <div class="callout callout-orange"><div class="callout-icon">🔗</div><div class="callout-text"><strong>Your saved dropshipping websites.</strong> Add any stores, tools or suppliers you find.</div></div>
-    <div class="label">Saved sites</div>
-    <div class="site-grid">
-      <a class="site-card" href="https://shopify.com" target="_blank"><div class="site-card-name">Shopify</div><div class="site-card-desc">Build your online store. Free trial available</div><div class="site-card-url">shopify.com</div></a>
-      <a class="site-card" href="https://aliexpress.com" target="_blank"><div class="site-card-name">AliExpress</div><div class="site-card-desc">Find cheap suppliers who ship worldwide</div><div class="site-card-url">aliexpress.com</div></a>
-      <a class="site-card" href="https://dsers.com" target="_blank"><div class="site-card-name">DSers</div><div class="site-card-desc">Automate order fulfilment from AliExpress</div><div class="site-card-url">dsers.com</div></a>
-      <a class="site-card" href="https://minea.com" target="_blank"><div class="site-card-name">Minea</div><div class="site-card-desc">Find winning products by spying on successful ads</div><div class="site-card-url">minea.com</div></a>
-      <a class="site-card" href="https://zendrop.com" target="_blank"><div class="site-card-name">Zendrop</div><div class="site-card-desc">UK and US suppliers with faster shipping than AliExpress</div><div class="site-card-url">zendrop.com</div></a>
-    </div>
   </div>
   <div id="dropship-overview" class="ipanel active">
     <div class="callout callout-orange">
@@ -526,44 +437,10 @@ body { font-family: 'Geist', sans-serif; background: var(--bg); color: var(--tex
     </div>
   </div>
   <div id="dropship-methods" class="ipanel">
-    <div class="label">Step by step</div>
-    <div class="method">
-      <div class="method-header"><div class="method-title">1. Find a winning product</div><div class="method-tags"><span class="card-tag ca">Research</span></div></div>
-      <div class="method-desc">Use Minea to see what products are being advertised successfully right now. Look for: high demand, low competition, £15–£80 price, solves a problem.</div>
-      <div class="method-sites">
-        <a class="method-link" href="https://minea.com" target="_blank"><div class="method-link-dot" style="background:var(--purple)"></div>Minea</a>
-        <a class="method-link" href="https://aliexpress.com" target="_blank"><div class="method-link-dot" style="background:var(--orange)"></div>AliExpress</a>
-        <a class="method-link" href="https://zendrop.com" target="_blank"><div class="method-link-dot" style="background:var(--teal)"></div>Zendrop (UK/US)</a>
-      </div>
-    </div>
-    <div class="method">
-      <div class="method-header"><div class="method-title">2. Build your store</div><div class="method-tags"><span class="card-tag cg">Setup</span></div></div>
-      <div class="method-desc">Shopify free trial. Pick a clean theme. Add your product with good images and a description focused on the problem it solves. Set price at 2–3× your supplier cost.</div>
-      <div class="method-sites">
-        <a class="method-link" href="https://shopify.com" target="_blank"><div class="method-link-dot" style="background:var(--green)"></div>Shopify</a>
-        <a class="method-link" href="https://dsers.com" target="_blank"><div class="method-link-dot" style="background:var(--blue)"></div>DSers (automate orders)</a>
-      </div>
-    </div>
-    <div class="method">
-      <div class="method-header"><div class="method-title">3. Drive traffic with TikTok organic</div><div class="method-tags"><span class="card-tag ct">Free traffic</span></div></div>
-      <div class="method-desc">Post 3+ TikTok videos per day showing the product in use. No talking — just show it solving a problem with trending audio. Best free method, can go viral overnight.</div>
-      <div class="method-sites">
-        <a class="method-link" href="https://tiktok.com" target="_blank"><div class="method-link-dot" style="background:var(--pink)"></div>TikTok</a>
-        <a class="method-link" href="https://instagram.com" target="_blank"><div class="method-link-dot" style="background:var(--orange)"></div>Instagram Reels</a>
-      </div>
-    </div>
-    <div class="method">
-      <div class="method-header"><div class="method-title">4. Process orders via DSers</div><div class="method-tags"><span class="card-tag cb">Operations</span></div></div>
-      <div class="method-desc">When someone orders, DSers automatically forwards it to your AliExpress supplier with the customer's address. You just approve and pay. Takes 2 minutes per order.</div>
-      <div class="method-sites">
-        <a class="method-link" href="https://dsers.com" target="_blank"><div class="method-link-dot" style="background:var(--blue)"></div>DSers</a>
-      </div>
-    </div>
   </div>
   <div id="dropship-notes" class="ipanel">
     <div class="label">Dropshipping notes</div>
-    <textarea class="note-area" id="n-dropship" placeholder="Product ideas, supplier notes, store URLs, what's working..." oninput="saveNote('n-dropship')"></textarea>
-    <div class="save-label" id="n-dropship-lbl">autosaved</div>
+    <div class="note-wrap" id="n-dropship" data-note-id="n-dropship" data-placeholder="Product ideas, supplier notes, store URLs, what's working..."></div>
   </div>
 </div>
 
@@ -580,15 +457,6 @@ body { font-family: 'Geist', sans-serif; background: var(--bg); color: var(--tex
     <div class="itab" onclick="itab(this,'products','notes')">Notes</div>
   </div>
   <div id="products-websites" class="ipanel">
-    <div class="callout callout-green"><div class="callout-icon">🔗</div><div class="callout-text"><strong>Your saved product-selling websites.</strong> Add any marketplaces or tools you find.</div></div>
-    <div class="label">Saved sites</div>
-    <div class="site-grid">
-      <a class="site-card" href="https://gumroad.com" target="_blank"><div class="site-card-name">Gumroad</div><div class="site-card-desc">Easiest way to sell any digital product. 10% fee, free to start</div><div class="site-card-url">gumroad.com</div></a>
-      <a class="site-card" href="https://etsy.com" target="_blank"><div class="site-card-name">Etsy</div><div class="site-card-desc">Huge audience already searching for templates and digital files</div><div class="site-card-url">etsy.com</div></a>
-      <a class="site-card" href="https://payhip.com" target="_blank"><div class="site-card-name">Payhip</div><div class="site-card-desc">Free to list, 5% fee. Good Gumroad alternative</div><div class="site-card-url">payhip.com</div></a>
-      <a class="site-card" href="https://teachable.com" target="_blank"><div class="site-card-name">Teachable</div><div class="site-card-desc">Host and sell video courses. Free plan available</div><div class="site-card-url">teachable.com</div></a>
-      <a class="site-card" href="https://creativemarket.com" target="_blank"><div class="site-card-name">Creative Market</div><div class="site-card-desc">Sell design assets — fonts, templates, icons. Higher prices</div><div class="site-card-url">creativemarket.com</div></a>
-    </div>
   </div>
   <div id="products-overview" class="ipanel active">
     <div class="callout callout-green">
@@ -606,37 +474,10 @@ body { font-family: 'Geist', sans-serif; background: var(--bg); color: var(--tex
     </div>
   </div>
   <div id="products-methods" class="ipanel">
-    <div class="label">Where to sell</div>
-    <div class="method">
-      <div class="method-header"><div class="method-title">Gumroad</div><div class="method-tags"><span class="card-tag ck">Best for digital</span></div></div>
-      <div class="method-desc">Easiest platform for any digital product. Upload your file, set a price, share the link. 10% commission. Free to start. Works for templates, guides, tools, courses.</div>
-      <div class="method-sites"><a class="method-link" href="https://gumroad.com" target="_blank"><div class="method-link-dot" style="background:var(--pink)"></div>Gumroad</a></div>
-    </div>
-    <div class="method">
-      <div class="method-header"><div class="method-title">Etsy</div><div class="method-tags"><span class="card-tag co">Built-in traffic</span></div></div>
-      <div class="method-desc">Huge search audience looking for templates and digital files. Great for Canva templates, Notion dashboards, printables. Small listing fee (£0.18 per item).</div>
-      <div class="method-sites"><a class="method-link" href="https://etsy.com" target="_blank"><div class="method-link-dot" style="background:var(--orange)"></div>Etsy</a></div>
-    </div>
-    <div class="method">
-      <div class="method-header"><div class="method-title">Payhip</div><div class="method-tags"><span class="card-tag cg">Free plan</span></div></div>
-      <div class="method-desc">Free to list products, 5% transaction fee. Good Gumroad alternative. Works for any digital product.</div>
-      <div class="method-sites"><a class="method-link" href="https://payhip.com" target="_blank"><div class="method-link-dot" style="background:var(--green)"></div>Payhip</a></div>
-    </div>
-    <div class="method">
-      <div class="method-header"><div class="method-title">Creative Market</div><div class="method-tags"><span class="card-tag cb">Design assets</span></div></div>
-      <div class="method-desc">Specifically for design assets — fonts, templates, icons, UI kits. Higher quality buyers, higher prices. Need to apply to sell.</div>
-      <div class="method-sites"><a class="method-link" href="https://creativemarket.com" target="_blank"><div class="method-link-dot" style="background:var(--blue)"></div>Creative Market</a></div>
-    </div>
-    <div class="method">
-      <div class="method-header"><div class="method-title">Teachable</div><div class="method-tags"><span class="card-tag cp">Courses</span></div></div>
-      <div class="method-desc">Best for video courses. Host videos, add quizzes, issue certificates. Free plan available with 10% transaction fee.</div>
-      <div class="method-sites"><a class="method-link" href="https://teachable.com" target="_blank"><div class="method-link-dot" style="background:var(--purple)"></div>Teachable</a></div>
-    </div>
   </div>
   <div id="products-notes" class="ipanel">
     <div class="label">Products notes</div>
-    <textarea class="note-area" id="n-products" placeholder="Product ideas, what to make first, pricing, platform notes..." oninput="saveNote('n-products')"></textarea>
-    <div class="save-label" id="n-products-lbl">autosaved</div>
+    <div class="note-wrap" id="n-products" data-note-id="n-products" data-placeholder="Product ideas, what to make first, pricing, platform notes..."></div>
   </div>
 </div>
 
@@ -653,15 +494,6 @@ body { font-family: 'Geist', sans-serif; background: var(--bg); color: var(--tex
     <div class="itab" onclick="itab(this,'clothing','notes')">Notes</div>
   </div>
   <div id="clothing-websites" class="ipanel">
-    <div class="callout callout-pink"><div class="callout-icon">🔗</div><div class="callout-text"><strong>Your saved clothing websites.</strong> Add any print-on-demand platforms or design tools you find.</div></div>
-    <div class="label">Saved sites</div>
-    <div class="site-grid">
-      <a class="site-card" href="https://printful.com" target="_blank"><div class="site-card-name">Printful</div><div class="site-card-desc">Best quality print-on-demand. Connects to Shopify and Etsy</div><div class="site-card-url">printful.com</div></a>
-      <a class="site-card" href="https://printify.com" target="_blank"><div class="site-card-name">Printify</div><div class="site-card-desc">More suppliers, lower base costs than Printful</div><div class="site-card-url">printify.com</div></a>
-      <a class="site-card" href="https://redbubble.com" target="_blank"><div class="site-card-name">Redbubble</div><div class="site-card-desc">Upload designs to their marketplace — no store setup needed</div><div class="site-card-url">redbubble.com</div></a>
-      <a class="site-card" href="https://merch.amazon.com" target="_blank"><div class="site-card-name">Merch by Amazon</div><div class="site-card-desc">Amazon's print-on-demand. Huge audience. Apply to join</div><div class="site-card-url">merch.amazon.com</div></a>
-      <a class="site-card" href="https://canva.com" target="_blank"><div class="site-card-name">Canva</div><div class="site-card-desc">Make t-shirt designs for free. Search "t-shirt design" in templates</div><div class="site-card-url">canva.com</div></a>
-    </div>
   </div>
   <div id="clothing-overview" class="ipanel active">
     <div class="callout callout-pink">
@@ -682,39 +514,10 @@ body { font-family: 'Geist', sans-serif; background: var(--bg); color: var(--tex
     </div>
   </div>
   <div id="clothing-methods" class="ipanel">
-    <div class="label">Platforms to use</div>
-    <div class="method">
-      <div class="method-header"><div class="method-title">Printful + Shopify or Etsy</div><div class="method-tags"><span class="card-tag cb">Best quality</span></div></div>
-      <div class="method-desc">Printful connects to Shopify or Etsy. Best print quality. Higher base costs but worth it. Great mockup generator built in.</div>
-      <div class="method-sites">
-        <a class="method-link" href="https://printful.com" target="_blank"><div class="method-link-dot" style="background:var(--blue)"></div>Printful</a>
-        <a class="method-link" href="https://shopify.com" target="_blank"><div class="method-link-dot" style="background:var(--green)"></div>Shopify</a>
-        <a class="method-link" href="https://etsy.com" target="_blank"><div class="method-link-dot" style="background:var(--orange)"></div>Etsy</a>
-      </div>
-    </div>
-    <div class="method">
-      <div class="method-header"><div class="method-title">Redbubble</div><div class="method-tags"><span class="card-tag ca">No store needed</span></div></div>
-      <div class="method-desc">Upload designs directly to Redbubble's marketplace. They handle printing, shipping, customer service. You just upload. Lower margins but zero setup — great for starting out.</div>
-      <div class="method-sites"><a class="method-link" href="https://redbubble.com" target="_blank"><div class="method-link-dot" style="background:var(--red)"></div>Redbubble</a></div>
-    </div>
-    <div class="method">
-      <div class="method-header"><div class="method-title">Merch by Amazon</div><div class="method-tags"><span class="card-tag cp">Huge reach</span></div></div>
-      <div class="method-desc">Amazon sells and ships. Massive built-in audience. Invite-only — apply first, takes a few weeks to get approved.</div>
-      <div class="method-sites"><a class="method-link" href="https://merch.amazon.com" target="_blank"><div class="method-link-dot" style="background:var(--orange)"></div>Merch by Amazon</a></div>
-    </div>
-    <div class="method">
-      <div class="method-header"><div class="method-title">Make designs in Canva</div><div class="method-tags"><span class="card-tag ct">Free tool</span></div></div>
-      <div class="method-desc">Use Canva's free plan. Search "t-shirt design" in templates. Export as PNG (transparent background). Takes 15 minutes per design.</div>
-      <div class="method-sites">
-        <a class="method-link" href="https://canva.com" target="_blank"><div class="method-link-dot" style="background:var(--purple)"></div>Canva</a>
-        <a class="method-link" href="https://www.adobe.com/express" target="_blank"><div class="method-link-dot" style="background:var(--red)"></div>Adobe Express</a>
-      </div>
-    </div>
   </div>
   <div id="clothing-notes" class="ipanel">
     <div class="label">Clothing notes</div>
-    <textarea class="note-area" id="n-clothing" placeholder="Design ideas, niche targets, what's selling, platform notes..." oninput="saveNote('n-clothing')"></textarea>
-    <div class="save-label" id="n-clothing-lbl">autosaved</div>
+    <div class="note-wrap" id="n-clothing" data-note-id="n-clothing" data-placeholder="Design ideas, niche targets, what's selling, platform notes..."></div>
   </div>
 </div>
 
@@ -731,15 +534,6 @@ body { font-family: 'Geist', sans-serif; background: var(--bg); color: var(--tex
     <div class="itab" onclick="itab(this,'apps','notes')">Notes</div>
   </div>
   <div id="apps-websites" class="ipanel">
-    <div class="callout callout-purple"><div class="callout-icon">🔗</div><div class="callout-text"><strong>Your saved app-building websites.</strong> Add any marketplaces, hosting, or tools you find.</div></div>
-    <div class="label">Saved sites</div>
-    <div class="site-grid">
-      <a class="site-card" href="https://netlify.com" target="_blank"><div class="site-card-name">Netlify</div><div class="site-card-desc">Deploy web apps for free. Drag and drop your HTML file</div><div class="site-card-url">netlify.com</div></a>
-      <a class="site-card" href="https://codecanyon.net" target="_blank"><div class="site-card-name">CodeCanyon</div><div class="site-card-desc">Sell web apps and scripts to a huge buyer marketplace</div><div class="site-card-url">codecanyon.net</div></a>
-      <a class="site-card" href="https://flippa.com" target="_blank"><div class="site-card-name">Flippa</div><div class="site-card-desc">Sell entire apps or websites for a lump sum</div><div class="site-card-url">flippa.com</div></a>
-      <a class="site-card" href="https://stripe.com" target="_blank"><div class="site-card-name">Stripe</div><div class="site-card-desc">Accept payments in your app. Free to set up, 1.5% + 20p per transaction</div><div class="site-card-url">stripe.com</div></a>
-      <a class="site-card" href="https://pages.github.com" target="_blank"><div class="site-card-name">GitHub Pages</div><div class="site-card-desc">Free hosting for HTML apps. Good for portfolio sites</div><div class="site-card-url">pages.github.com</div></a>
-    </div>
   </div>
   <div id="apps-overview" class="ipanel active">
     <div class="callout callout-purple">
@@ -755,43 +549,10 @@ body { font-family: 'Geist', sans-serif; background: var(--bg); color: var(--tex
     </div>
   </div>
   <div id="apps-methods" class="ipanel">
-    <div class="label">Where to sell or list</div>
-    <div class="method">
-      <div class="method-header"><div class="method-title">CodeCanyon (Envato Market)</div><div class="method-tags"><span class="card-tag cp">Marketplace</span></div></div>
-      <div class="method-desc">List web apps, scripts, and tools. Huge buyer base. You set the price. Great for one-off scripts and tools. Apply to become a seller first.</div>
-      <div class="method-sites"><a class="method-link" href="https://codecanyon.net" target="_blank"><div class="method-link-dot" style="background:var(--green)"></div>CodeCanyon</a></div>
-    </div>
-    <div class="method">
-      <div class="method-header"><div class="method-title">Flippa</div><div class="method-tags"><span class="card-tag ca">Sell whole apps</span></div></div>
-      <div class="method-desc">Marketplace to sell entire apps, websites, and SaaS products. Buyers pay a lump sum to own it outright. List with traffic and revenue data.</div>
-      <div class="method-sites"><a class="method-link" href="https://flippa.com" target="_blank"><div class="method-link-dot" style="background:var(--blue)"></div>Flippa</a></div>
-    </div>
-    <div class="method">
-      <div class="method-header"><div class="method-title">Gumroad</div><div class="method-tags"><span class="card-tag ck">Easy setup</span></div></div>
-      <div class="method-desc">Sell access to your app or tool as a digital product. Upload a link/file, set a price. Good for simple HTML tools.</div>
-      <div class="method-sites"><a class="method-link" href="https://gumroad.com" target="_blank"><div class="method-link-dot" style="background:var(--pink)"></div>Gumroad</a></div>
-    </div>
-    <div class="method">
-      <div class="method-header"><div class="method-title">Upwork + Fiverr</div><div class="method-tags"><span class="card-tag cb">Freelance</span></div></div>
-      <div class="method-desc">Offer to build custom web apps for clients. £200–£2K per project. Your existing apps (BuzzIn!, etc.) are your portfolio.</div>
-      <div class="method-sites">
-        <a class="method-link" href="https://upwork.com" target="_blank"><div class="method-link-dot" style="background:var(--blue)"></div>Upwork</a>
-        <a class="method-link" href="https://fiverr.com" target="_blank"><div class="method-link-dot" style="background:var(--green)"></div>Fiverr</a>
-      </div>
-    </div>
-    <div class="method">
-      <div class="method-header"><div class="method-title">Host + charge subscription</div><div class="method-tags"><span class="card-tag cg">Recurring</span></div></div>
-      <div class="method-desc">Deploy on Netlify (free). Add a payment wall using Stripe or Gumroad. BuzzIn! could charge £5/month for premium features.</div>
-      <div class="method-sites">
-        <a class="method-link" href="https://netlify.com" target="_blank"><div class="method-link-dot" style="background:var(--teal)"></div>Netlify</a>
-        <a class="method-link" href="https://stripe.com" target="_blank"><div class="method-link-dot" style="background:var(--purple)"></div>Stripe</a>
-      </div>
-    </div>
   </div>
   <div id="apps-notes" class="ipanel">
     <div class="label">App building notes</div>
-    <textarea class="note-area" id="n-apps" placeholder="App ideas, monetisation plans, client leads, feature ideas..." oninput="saveNote('n-apps')"></textarea>
-    <div class="save-label" id="n-apps-lbl">autosaved</div>
+    <div class="note-wrap" id="n-apps" data-note-id="n-apps" data-placeholder="App ideas, monetisation plans, client leads, feature ideas..."></div>
   </div>
 </div>
 
@@ -808,15 +569,6 @@ body { font-family: 'Geist', sans-serif; background: var(--bg); color: var(--tex
     <div class="itab" onclick="itab(this,'websites','notes')">Notes</div>
   </div>
   <div id="websites-websites" class="ipanel">
-    <div class="callout callout-teal"><div class="callout-icon">🔗</div><div class="callout-text"><strong>Your saved website-building resources.</strong> Add any tools, clients or references you find.</div></div>
-    <div class="label">Saved sites</div>
-    <div class="site-grid">
-      <a class="site-card" href="https://fiverr.com" target="_blank"><div class="site-card-name">Fiverr</div><div class="site-card-desc">List your web design services and get found by clients</div><div class="site-card-url">fiverr.com</div></a>
-      <a class="site-card" href="https://upwork.com" target="_blank"><div class="site-card-name">Upwork</div><div class="site-card-desc">Apply to web design jobs posted by businesses</div><div class="site-card-url">upwork.com</div></a>
-      <a class="site-card" href="https://maps.google.com" target="_blank"><div class="site-card-name">Google Maps</div><div class="site-card-desc">Find local businesses with no website to cold outreach</div><div class="site-card-url">maps.google.com</div></a>
-      <a class="site-card" href="https://netlify.com" target="_blank"><div class="site-card-name">Netlify</div><div class="site-card-desc">Host client websites for free. Easy drag-and-drop deploy</div><div class="site-card-url">netlify.com</div></a>
-      <a class="site-card" href="https://canva.com" target="_blank"><div class="site-card-name">Canva</div><div class="site-card-desc">Create website mockups to show clients before building</div><div class="site-card-url">canva.com</div></a>
-    </div>
   </div>
   <div id="websites-overview" class="ipanel active">
     <div class="callout callout-teal">
@@ -837,41 +589,10 @@ body { font-family: 'Geist', sans-serif; background: var(--bg); color: var(--tex
     </div>
   </div>
   <div id="websites-methods" class="ipanel">
-    <div class="label">How to get clients</div>
-    <div class="method">
-      <div class="method-header"><div class="method-title">Cold outreach via Google Maps</div><div class="method-tags"><span class="card-tag ct">Free</span></div></div>
-      <div class="method-desc">Search for local businesses on Google Maps. If they have no website listed, email them: "I noticed you don't have a website — I can build one for £X." High hit rate because they actually need it.</div>
-      <div class="method-sites"><a class="method-link" href="https://maps.google.com" target="_blank"><div class="method-link-dot" style="background:var(--teal)"></div>Google Maps</a></div>
-    </div>
-    <div class="method">
-      <div class="method-header"><div class="method-title">Fiverr & Upwork listings</div><div class="method-tags"><span class="card-tag cg">Inbound</span></div></div>
-      <div class="method-desc">Create a Fiverr Gig offering website design. Clients come through search. Slower to build up but fully passive once you have reviews.</div>
-      <div class="method-sites">
-        <a class="method-link" href="https://fiverr.com" target="_blank"><div class="method-link-dot" style="background:var(--green)"></div>Fiverr</a>
-        <a class="method-link" href="https://upwork.com" target="_blank"><div class="method-link-dot" style="background:var(--blue)"></div>Upwork</a>
-      </div>
-    </div>
-    <div class="method">
-      <div class="method-header"><div class="method-title">Build portfolio on GitHub Pages</div><div class="method-tags"><span class="card-tag ca">First step</span></div></div>
-      <div class="method-desc">Make 2–3 demo websites for fake or real businesses. Host free on GitHub Pages. This is what you show clients when pitching.</div>
-      <div class="method-sites">
-        <a class="method-link" href="https://pages.github.com" target="_blank"><div class="method-link-dot" style="background:var(--text)"></div>GitHub Pages</a>
-        <a class="method-link" href="https://netlify.com" target="_blank"><div class="method-link-dot" style="background:var(--teal)"></div>Netlify</a>
-      </div>
-    </div>
-    <div class="method">
-      <div class="method-header"><div class="method-title">Use Claude to build faster</div><div class="method-tags"><span class="card-tag cb">Speed up</span></div></div>
-      <div class="method-desc">Describe what the client wants and Claude writes most of the HTML/CSS/JS for you. You check, tweak, and deliver. Cuts build time in half — you can charge more for less work.</div>
-      <div class="method-sites">
-        <a class="method-link" href="https://claude.ai" target="_blank"><div class="method-link-dot" style="background:var(--text)"></div>Claude</a>
-        <a class="method-link" href="https://canva.com" target="_blank"><div class="method-link-dot" style="background:var(--purple)"></div>Canva (mockups)</a>
-      </div>
-    </div>
   </div>
   <div id="websites-notes" class="ipanel">
     <div class="label">Website business notes</div>
-    <textarea class="note-area" id="n-websites" placeholder="Client leads, portfolio ideas, pricing decisions, proposals..." oninput="saveNote('n-websites')"></textarea>
-    <div class="save-label" id="n-websites-lbl">autosaved</div>
+    <div class="note-wrap" id="n-websites" data-note-id="n-websites" data-placeholder="Client leads, portfolio ideas, pricing decisions, proposals..."></div>
   </div>
 </div>
 
@@ -887,17 +608,6 @@ body { font-family: 'Geist', sans-serif; background: var(--bg); color: var(--tex
     <div class="itab" onclick="itab(this,'aitools','notes')">Notes</div>
   </div>
   <div id="aitools-websites" class="ipanel">
-    <div class="callout callout-gold"><div class="callout-icon">🔗</div><div class="callout-text"><strong>Your saved AI tool websites.</strong> Add any new tools you discover here.</div></div>
-    <div class="label">Saved sites</div>
-    <div class="site-grid">
-      <a class="site-card" href="https://claude.ai" target="_blank"><div class="site-card-name">Claude</div><div class="site-card-desc">Best AI for scripts, code, and long-form writing</div><div class="site-card-url">claude.ai</div></a>
-      <a class="site-card" href="https://app.runwayml.com" target="_blank"><div class="site-card-name">Runway ML</div><div class="site-card-desc">Generate images with Nano Banana 2. Also does video</div><div class="site-card-url">app.runwayml.com</div></a>
-      <a class="site-card" href="https://elevenlabs.io" target="_blank"><div class="site-card-name">ElevenLabs</div><div class="site-card-desc">AI voiceover. 10,000 characters per month free</div><div class="site-card-url">elevenlabs.io</div></a>
-      <a class="site-card" href="https://lumalabs.ai/dream-machine" target="_blank"><div class="site-card-name">Luma AI</div><div class="site-card-desc">Animate images into video clips. Free tier available</div><div class="site-card-url">lumalabs.ai</div></a>
-      <a class="site-card" href="https://klingai.com" target="_blank"><div class="site-card-name">Kling AI</div><div class="site-card-desc">Free AI video generation. Good free credit allowance</div><div class="site-card-url">klingai.com</div></a>
-      <a class="site-card" href="https://canva.com" target="_blank"><div class="site-card-name">Canva</div><div class="site-card-desc">Design tool for thumbnails, t-shirts, mockups — all free</div><div class="site-card-url">canva.com</div></a>
-      <a class="site-card" href="https://make.com" target="_blank"><div class="site-card-name">Make.com</div><div class="site-card-desc">Automate workflows by connecting AI tools together</div><div class="site-card-url">make.com</div></a>
-    </div>
   </div>
   <div id="aitools-overview" class="ipanel active">
     <div class="callout callout-gold">
@@ -915,55 +625,10 @@ body { font-family: 'Geist', sans-serif; background: var(--bg); color: var(--tex
     </div>
   </div>
   <div id="aitools-websites" class="ipanel">
-    <div class="label">Writing & Scripts</div>
-    <div class="site-grid">
-      <a class="site-card" href="https://claude.ai" target="_blank"><div class="site-card-name">Claude</div><div class="site-card-desc">Best AI for scripts, code, and long-form writing</div><div class="site-card-url">claude.ai</div></a>
-      <a class="site-card" href="https://gemini.google.com" target="_blank"><div class="site-card-name">Gemini</div><div class="site-card-desc">Google's AI — free with no daily limit</div><div class="site-card-url">gemini.google.com</div></a>
-      <a class="site-card" href="https://chatgpt.com" target="_blank"><div class="site-card-name">ChatGPT</div><div class="site-card-desc">General purpose AI writing and research</div><div class="site-card-url">chatgpt.com</div></a>
-    </div>
-    <div class="label">Image Generation</div>
-    <div class="site-grid">
-      <a class="site-card" href="https://app.runwayml.com" target="_blank"><div class="site-card-name">Runway ML</div><div class="site-card-desc">Generate images with Nano Banana 2 — main tool for Shorts</div><div class="site-card-url">app.runwayml.com</div></a>
-      <a class="site-card" href="https://ideogram.ai" target="_blank"><div class="site-card-name">Ideogram</div><div class="site-card-desc">Free AI image generation with good text handling</div><div class="site-card-url">ideogram.ai</div></a>
-      <a class="site-card" href="https://leonardo.ai" target="_blank"><div class="site-card-name">Leonardo AI</div><div class="site-card-desc">150 free image generation credits per day</div><div class="site-card-url">leonardo.ai</div></a>
-    </div>
-    <div class="label">Video Generation</div>
-    <div class="site-grid">
-      <a class="site-card" href="https://lumalabs.ai/dream-machine" target="_blank"><div class="site-card-name">Luma AI</div><div class="site-card-desc">Animate images into video clips. Free tier available</div><div class="site-card-url">lumalabs.ai</div></a>
-      <a class="site-card" href="https://klingai.com" target="_blank"><div class="site-card-name">Kling AI</div><div class="site-card-desc">Free video generation with generous credits</div><div class="site-card-url">klingai.com</div></a>
-      <a class="site-card" href="https://pika.art" target="_blank"><div class="site-card-name">Pika</div><div class="site-card-desc">Animate images with motion effects for free</div><div class="site-card-url">pika.art</div></a>
-      <a class="site-card" href="https://hailuoai.video" target="_blank"><div class="site-card-name">Hailuo AI</div><div class="site-card-desc">Another free video gen option — rotate with others</div><div class="site-card-url">hailuoai.video</div></a>
-    </div>
-    <div class="label">Voiceover</div>
-    <div class="site-grid">
-      <a class="site-card" href="https://elevenlabs.io" target="_blank"><div class="site-card-name">ElevenLabs</div><div class="site-card-desc">AI voiceover — 10,000 characters per month free, sounds human</div><div class="site-card-url">elevenlabs.io</div></a>
-      <a class="site-card" href="https://murf.ai" target="_blank"><div class="site-card-name">Murf AI</div><div class="site-card-desc">Text to speech with multiple voice styles. Free tier</div><div class="site-card-url">murf.ai</div></a>
-    </div>
-    <div class="label">Design & Editing</div>
-    <div class="site-grid">
-      <a class="site-card" href="https://canva.com" target="_blank"><div class="site-card-name">Canva</div><div class="site-card-desc">Design thumbnails, t-shirts, mockups and templates for free</div><div class="site-card-url">canva.com</div></a>
-      <a class="site-card" href="https://www.capcut.com" target="_blank"><div class="site-card-name">CapCut</div><div class="site-card-desc">Edit and export Shorts. Add captions and music</div><div class="site-card-url">capcut.com</div></a>
-      <a class="site-card" href="https://www.remove.bg" target="_blank"><div class="site-card-name">Remove.bg</div><div class="site-card-desc">Remove image backgrounds instantly for free</div><div class="site-card-url">remove.bg</div></a>
-      <a class="site-card" href="https://www.adobe.com/express" target="_blank"><div class="site-card-name">Adobe Express</div><div class="site-card-desc">Free design tool for graphics and social content</div><div class="site-card-url">adobe.com/express</div></a>
-    </div>
-    <div class="label">Research & Trends</div>
-    <div class="site-grid">
-      <a class="site-card" href="https://trends.google.com" target="_blank"><div class="site-card-name">Google Trends</div><div class="site-card-desc">See if a niche is growing or dying over time</div><div class="site-card-url">trends.google.com</div></a>
-      <a class="site-card" href="https://explodingtopics.com" target="_blank"><div class="site-card-name">Exploding Topics</div><div class="site-card-desc">Find trending niches before they blow up</div><div class="site-card-url">explodingtopics.com</div></a>
-      <a class="site-card" href="https://vidiq.com" target="_blank"><div class="site-card-name">vidIQ</div><div class="site-card-desc">YouTube keyword research and channel analytics</div><div class="site-card-url">vidiq.com</div></a>
-      <a class="site-card" href="https://answerthepublic.com" target="_blank"><div class="site-card-name">Answer the Public</div><div class="site-card-desc">See what people are searching for on any topic</div><div class="site-card-url">answerthepublic.com</div></a>
-    </div>
-    <div class="label">Automation</div>
-    <div class="site-grid">
-      <a class="site-card" href="https://make.com" target="_blank"><div class="site-card-name">Make.com</div><div class="site-card-desc">Connect AI tools together to automate your workflow free</div><div class="site-card-url">make.com</div></a>
-      <a class="site-card" href="https://zapier.com" target="_blank"><div class="site-card-name">Zapier</div><div class="site-card-desc">Automate tasks between apps without coding</div><div class="site-card-url">zapier.com</div></a>
-      <a class="site-card" href="https://n8n.io" target="_blank"><div class="site-card-name">n8n</div><div class="site-card-desc">Open source automation — free to self-host</div><div class="site-card-url">n8n.io</div></a>
-    </div>
   </div>
   <div id="aitools-notes" class="ipanel">
     <div class="label">AI tools notes</div>
-    <textarea class="note-area" id="n-aitools" placeholder="Prompts that work well, tips per tool, workflow ideas..." oninput="saveNote('n-aitools')"></textarea>
-    <div class="save-label" id="n-aitools-lbl">autosaved</div>
+    <div class="note-wrap" id="n-aitools" data-note-id="n-aitools" data-placeholder="Prompts that work well, tips per tool, workflow ideas..."></div>
   </div>
 </div>
 
@@ -997,12 +662,141 @@ function itab(btn, section, panel) {
   document.querySelector('.main').scrollTo(0, 0);
 }
 
-// Notes autosave
-function saveNote(id) {
-  try { localStorage.setItem('hub_' + id, document.getElementById(id).value); } catch(e) {}
-  const lbl = document.getElementById(id + '-lbl');
-  if (lbl) { lbl.textContent = 'saved ✓'; lbl.classList.add('ok'); setTimeout(() => { lbl.textContent = 'autosaved'; lbl.classList.remove('ok'); }, 1500); }
+// ── RICH NOTES ──
+const NOTE_IDS = ['n-general','n-youtube','n-freelance','n-dropship','n-products','n-clothing','n-apps','n-websites','n-aitools'];
+
+function buildEditor(id, placeholder) {
+  const wrap = document.getElementById(id);
+  if (!wrap) return;
+  wrap.dataset.placeholder = placeholder;
+  wrap.dataset.noteCount = '0';
+  wrap.innerHTML = '';
+  addNoteBlock(id, placeholder);
+  // Add another note button
+  const addBtn = document.createElement('button');
+  addBtn.className = 'add-note-btn';
+  addBtn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add another note`;
+  addBtn.onclick = () => addNoteBlock(id, placeholder);
+  wrap.appendChild(addBtn);
 }
+
+function addNoteBlock(wrapId, placeholder) {
+  const wrap = document.getElementById(wrapId);
+  if (!wrap) return;
+  const count = parseInt(wrap.dataset.noteCount || '0');
+  const blockId = wrapId + '-' + count;
+  wrap.dataset.noteCount = count + 1;
+
+  const block = document.createElement('div');
+  block.className = 'note-block';
+  block.id = blockId + '-block';
+  block.innerHTML = `
+    <div class="note-toolbar" id="${blockId}-toolbar" style="display:none">
+      <button onclick="noteCmd('${blockId}','h1')">H Heading</button>
+      <button onclick="noteCmd('${blockId}','h2')">H2 Sub</button>
+      <button onclick="noteCmd('${blockId}','p')">Normal</button>
+      <button onclick="noteCmd('${blockId}','li')">• Bullet</button>
+      <button class="done-btn" onclick="toggleEdit('${blockId}',false)">✓ Done</button>
+    </div>
+    <div class="note-area" id="${blockId}-editor" contenteditable="false" data-placeholder="${placeholder}"></div>
+    <div class="note-footer">
+      <div class="save-label" id="${blockId}-lbl">autosaved</div>
+      <button class="note-edit-btn" id="${blockId}-editbtn" onclick="toggleEdit('${blockId}',true)">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        Edit
+      </button>
+    </div>`;
+
+  // Insert before the add button (last child)
+  const addBtn = wrap.querySelector('.add-note-btn');
+  if (addBtn) wrap.insertBefore(block, addBtn);
+  else wrap.appendChild(block);
+
+  const editor = document.getElementById(blockId+'-editor');
+  // Load saved content
+  try {
+    const saved = localStorage.getItem('rich_'+blockId);
+    if (saved) editor.innerHTML = saved;
+  } catch(e){}
+
+  editor.addEventListener('input', () => {
+    try { localStorage.setItem('rich_'+blockId, editor.innerHTML); } catch(e){}
+    const lbl = document.getElementById(blockId+'-lbl');
+    if (lbl) { lbl.textContent = 'saved ✓'; lbl.classList.add('ok'); setTimeout(()=>{ lbl.textContent='autosaved'; lbl.classList.remove('ok'); },1500); }
+  });
+
+  // Auto-open in edit mode if empty
+  if (!editor.innerHTML.trim()) toggleEdit(blockId, true);
+}
+
+function toggleEdit(id, editing) {
+  const editor = document.getElementById(id+'-editor');
+  const toolbar = document.getElementById(id+'-toolbar');
+  const editBtn = document.getElementById(id+'-editbtn');
+  if (!editor) return;
+  editor.contentEditable = editing ? 'true' : 'false';
+  if (toolbar) toolbar.style.display = editing ? 'flex' : 'none';
+  if (editBtn) editBtn.style.display = editing ? 'none' : 'inline-flex';
+  if (editing) {
+    editor.focus();
+    try { const r=document.createRange(); r.selectNodeContents(editor); r.collapse(false); const s=window.getSelection(); s.removeAllRanges(); s.addRange(r); } catch(e){}
+  }
+}
+
+function noteCmd(id, tag) {
+  const editor = document.getElementById(id+'-editor');
+  if (!editor) return;
+  editor.focus();
+  const sel = window.getSelection();
+  if (!sel.rangeCount) { 
+    // No selection — append new block at end
+    const el = document.createElement(tag==='li'?'ul':tag);
+    if (tag==='li') { const li=document.createElement('li'); li.innerHTML='<br>'; el.appendChild(li); }
+    else el.innerHTML = '<br>';
+    editor.appendChild(el);
+    const target = tag==='li' ? el.querySelector('li') : el;
+    const r=document.createRange(); r.setStart(target,0); r.collapse(true);
+    sel.removeAllRanges(); sel.addRange(r);
+    editor.dispatchEvent(new Event('input'));
+    return;
+  }
+  const range = sel.getRangeAt(0);
+  let node = range.startContainer;
+  if (node.nodeType===3) node = node.parentElement;
+  const block = node.closest('h1,h2,p,li,ul') || (editor.contains(node) ? node : null);
+
+  if (tag === 'li') {
+    const li = document.createElement('li');
+    li.innerHTML = (block && block!==editor) ? (block.tagName==='UL'?'<br>':block.innerHTML) : '<br>';
+    if (block && block!==editor) {
+      if (block.tagName==='UL') { block.appendChild(li); }
+      else { const ul=document.createElement('ul'); ul.appendChild(li); block.replaceWith(ul); }
+    } else { const ul=document.createElement('ul'); ul.appendChild(li); editor.appendChild(ul); }
+    const r=document.createRange(); r.setStart(li,0); r.collapse(true);
+    sel.removeAllRanges(); sel.addRange(r);
+  } else {
+    const el = document.createElement(tag);
+    el.innerHTML = (block && block!==editor) ? block.innerHTML : '<br>';
+    if (block && block!==editor) {
+      const ul=block.closest('ul');
+      if (ul) ul.replaceWith(el); else block.replaceWith(el);
+    } else editor.appendChild(el);
+    const r=document.createRange(); r.setStart(el,0); r.collapse(true);
+    sel.removeAllRanges(); sel.addRange(r);
+  }
+  editor.dispatchEvent(new Event('input'));
+}
+
+// Legacy saveNote stub (keep for compatibility)
+function saveNote(id) {}
+
+window.addEventListener('load', () => {
+  // Build rich editors — find all .note-wrap divs
+  document.querySelectorAll('.note-wrap[data-note-id]').forEach(wrap => {
+    buildEditor(wrap.dataset.noteId, wrap.dataset.placeholder || 'Start typing...');
+  });
+  injectForms();
+});
 
 // Extractor
 let extCat = 'general', extResult = '';
@@ -1038,12 +832,134 @@ async function runExtract() {
 function copyResult() { navigator.clipboard.writeText(extResult).then(() => alert('Copied!')); }
 function clearExt() { document.getElementById('ext-input').value = ''; document.getElementById('ext-result').classList.remove('show'); extResult = ''; }
 
-// Load saved notes
+
+// ── CUSTOM SITES & METHODS ──
+const SECTIONS = ['youtube','freelance','dropship','products','clothing','apps','websites','aitools'];
+
+function getSites(section) {
+  try { return JSON.parse(localStorage.getItem('custom_sites_'+section)||'[]'); } catch(e){ return []; }
+}
+function saveSites(section, arr) {
+  try { localStorage.setItem('custom_sites_'+section, JSON.stringify(arr)); } catch(e){}
+}
+function getMethods(section) {
+  try { return JSON.parse(localStorage.getItem('custom_methods_'+section)||'[]'); } catch(e){ return []; }
+}
+function saveMethods(section, arr) {
+  try { localStorage.setItem('custom_methods_'+section, JSON.stringify(arr)); } catch(e){}
+}
+
+function renderCustomSites(section) {
+  const container = document.getElementById('custom-sites-'+section);
+  if (!container) return;
+  const sites = getSites(section);
+  container.innerHTML = sites.map((s,i) => `
+    <a class="site-card" href="${s.url}" target="_blank">
+      <button class="del-btn" onclick="delSite(event,'${section}',${i})">✕ remove</button>
+      <div class="site-card-name">${s.name}</div>
+      <div class="site-card-desc">${s.desc}</div>
+      <div class="site-card-url">${s.url.replace(/^https?:\/\//,'')}</div>
+    </a>`).join('');
+}
+
+function addSite(section) {
+  const name = document.getElementById('si-name-'+section).value.trim();
+  const url  = document.getElementById('si-url-'+section).value.trim();
+  const desc = document.getElementById('si-desc-'+section).value.trim();
+  if (!name || !url) return alert('Name and URL are required.');
+  const full = url.startsWith('http') ? url : 'https://'+url;
+  const arr = getSites(section);
+  arr.push({name, url: full, desc});
+  saveSites(section, arr);
+  renderCustomSites(section);
+  document.getElementById('si-name-'+section).value = '';
+  document.getElementById('si-url-'+section).value = '';
+  document.getElementById('si-desc-'+section).value = '';
+}
+
+function delSite(e, section, i) {
+  e.preventDefault(); e.stopPropagation();
+  const arr = getSites(section);
+  arr.splice(i,1);
+  saveSites(section, arr);
+  renderCustomSites(section);
+}
+
+function renderCustomMethods(section) {
+  const container = document.getElementById('custom-methods-'+section);
+  if (!container) return;
+  const methods = getMethods(section);
+  container.innerHTML = methods.map((m,i) => `
+    <div class="method">
+      <div class="method-header">
+        <div class="method-title">${m.title}</div>
+        <button class="method-del" onclick="delMethod('${section}',${i})">✕ remove</button>
+      </div>
+      <div class="method-desc">${m.desc}</div>
+    </div>`).join('');
+}
+
+function addMethod(section) {
+  const title = document.getElementById('me-title-'+section).value.trim();
+  const desc  = document.getElementById('me-desc-'+section).value.trim();
+  if (!title) return alert('Title is required.');
+  const arr = getMethods(section);
+  arr.push({title, desc});
+  saveMethods(section, arr);
+  renderCustomMethods(section);
+  document.getElementById('me-title-'+section).value = '';
+  document.getElementById('me-desc-'+section).value = '';
+}
+
+function delMethod(section, i) {
+  const arr = getMethods(section);
+  arr.splice(i,1);
+  saveMethods(section, arr);
+  renderCustomMethods(section);
+}
+
+// Inject add-forms into every section's websites and methods panels
+function injectForms() {
+  SECTIONS.forEach(sec => {
+    // Websites panel
+    const wp = document.getElementById(sec+'-websites');
+    if (wp) {
+      wp.insertAdjacentHTML('beforeend', `
+        <div class="label" style="margin-top:28px">Your saved sites</div>
+        <div class="site-grid" id="custom-sites-${sec}"></div>
+        <div class="label">Add a site</div>
+        <div class="add-form">
+          <input class="add-input" id="si-name-${sec}" placeholder="Name (e.g. Fiverr)">
+          <input class="add-input" id="si-url-${sec}" placeholder="URL (e.g. fiverr.com)">
+          <input class="add-input" id="si-desc-${sec}" placeholder="Description (optional)">
+          <button class="add-btn" onclick="addSite('${sec}')">+ Add</button>
+        </div>`);
+      renderCustomSites(sec);
+    }
+    // Methods panel
+    const mp = document.getElementById(sec+'-methods');
+    if (mp) {
+      mp.insertAdjacentHTML('beforeend', `
+        <div class="label" style="margin-top:28px">Your custom methods</div>
+        <div id="custom-methods-${sec}"></div>
+        <div class="label">Add a method</div>
+        <div class="add-form">
+          <input class="add-input" id="me-title-${sec}" placeholder="Title">
+          <input class="add-input" id="me-desc-${sec}" placeholder="Description">
+          <button class="add-btn" onclick="addMethod('${sec}')">+ Add</button>
+        </div>`);
+      renderCustomMethods(sec);
+    }
+  });
+}
+
 window.addEventListener('load', () => {
   ['n-general','n-goals','n-extract','n-youtube','n-freelance','n-dropship','n-products','n-clothing','n-apps','n-websites','n-aitools'].forEach(id => {
     try { const s = localStorage.getItem('hub_' + id); if (s && document.getElementById(id)) document.getElementById(id).value = s; } catch(e) {}
   });
+  injectForms();
 });
+
 </script>
 </body>
 </html>

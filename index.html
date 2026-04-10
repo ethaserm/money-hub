@@ -38,7 +38,7 @@ body { font-family: 'Geist', sans-serif; background: var(--bg); color: var(--tex
 .sidebar { width: 220px; flex-shrink: 0; background: var(--sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; height: 100vh; overflow-y: auto; scrollbar-width: none; transition: width 0.2s ease; overflow: hidden; }
 .sidebar.collapsed { width: 0; border-right: none; }
 .sidebar::-webkit-scrollbar { display: none; }
-.sidebar-logo { padding: 14px 12px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; min-width: 220px; }
+.sidebar-logo { padding: 14px 12px 14px 44px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; min-width: 220px; }
 .sidebar-logo-inner { overflow: hidden; }
 .sidebar-logo-title { font-family: 'Geist Mono', monospace; font-size: 13px; font-weight: 600; color: var(--text); letter-spacing: -0.02em; white-space: nowrap; }
 .sidebar-logo-sub { font-size: 10px; color: var(--muted); margin-top: 2px; font-family: 'Geist Mono', monospace; white-space: nowrap; }
@@ -68,7 +68,7 @@ body { font-family: 'Geist', sans-serif; background: var(--bg); color: var(--tex
 .page.active { display: block; }
 
 /* PAGE HEADER */
-.page-header { padding: 32px 36px 0; }
+.page-header { padding: 32px 36px 0 52px; }
 .page-title { font-size: 26px; font-weight: 700; letter-spacing: -0.04em; color: var(--text); line-height: 1.1; }
 .page-desc { font-size: 13px; color: var(--muted); margin-top: 6px; font-family: 'Geist Mono', monospace; }
 
@@ -147,20 +147,14 @@ body { font-family: 'Geist', sans-serif; background: var(--bg); color: var(--tex
 .divider { border: none; border-top: 1px solid var(--border); margin: 22px 0; }
 
 /* NOTES - rich editor */
-.note-wrap { margin-bottom: 20px; }
-.note-block { margin-bottom: 12px; }
-.note-toolbar { display: flex; gap: 4px; margin-bottom: 8px; flex-wrap: wrap; align-items: center; }
+.note-wrap { margin-bottom: 6px; }
+.note-toolbar { display: flex; gap: 4px; margin-bottom: 6px; flex-wrap: wrap; align-items: center; }
 .note-toolbar button { background: var(--surface2); border: 1px solid var(--border2); border-radius: 5px; color: var(--muted); cursor: pointer; padding: 4px 10px; font-size: 11px; font-weight: 600; font-family: 'Geist', sans-serif; transition: all 0.12s; }
 .note-toolbar button:hover { color: var(--text); border-color: var(--muted); }
-.done-btn { background: var(--green-dim) !important; border-color: var(--green) !important; color: var(--green) !important; }
-.note-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; }
-.note-edit-btn { display: inline-flex; align-items: center; gap: 5px; background: var(--surface2); border: 1px solid var(--border2); border-radius: 7px; color: var(--muted); cursor: pointer; padding: 5px 12px; font-size: 11px; font-weight: 600; font-family: 'Geist', sans-serif; transition: all 0.15s; }
-.note-edit-btn:hover { color: var(--text); border-color: var(--text); background: var(--surface); }
-.note-edit-btn svg { opacity: 0.6; }
-.add-note-btn { display: inline-flex; align-items: center; gap: 6px; background: none; border: 1px dashed var(--border2); border-radius: 8px; color: var(--muted); cursor: pointer; padding: 8px 16px; font-size: 12px; font-weight: 600; font-family: 'Geist', sans-serif; transition: all 0.15s; width: 100%; justify-content: center; margin-top: 4px; }
-.add-note-btn:hover { color: var(--text); border-color: var(--muted); background: var(--surface); }
-.note-area { width: 100%; min-height: 160px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; color: var(--text); font-family: 'Geist', sans-serif; font-size: 13px; line-height: 1.75; outline: none; transition: border-color 0.15s; overflow-y: auto; }
-.note-area[contenteditable="true"] { border-color: var(--border2); min-height: 160px; }
+.note-toolbar .edit-btn { margin-left: auto; background: var(--surface2); border-color: var(--border2); }
+.note-toolbar .done-btn { margin-left: auto; background: var(--green-dim); border-color: var(--green); color: var(--green); }
+.note-area { width: 100%; min-height: 200px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; color: var(--text); font-family: 'Geist', sans-serif; font-size: 13px; line-height: 1.75; outline: none; transition: border-color 0.15s; margin-bottom: 0; overflow-y: auto; }
+.note-area[contenteditable="true"] { border-color: var(--border2); }
 .note-area[contenteditable="false"] { cursor: default; }
 .note-area[data-placeholder]:empty::before { content: attr(data-placeholder); color: var(--hint); pointer-events: none; display: block; }
 .note-area h1 { font-size: 20px; font-weight: 700; color: var(--text); margin: 10px 0 4px; line-height: 1.2; }
@@ -202,6 +196,26 @@ body { font-family: 'Geist', sans-serif; background: var(--bg); color: var(--tex
 .progress-bar { height: 3px; background: var(--border); border-radius: 2px; margin-bottom: 16px; overflow: hidden; display: none; }
 .progress-bar.show { display: block; }
 .progress-fill { height: 100%; background: var(--gold); border-radius: 2px; width: 0; transition: width 0.3s ease; }
+/* GOAL TRACKER */
+.goal-tracker { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+.goal-tracker-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 8px; }
+.goal-tracker-title { font-size: 13px; font-weight: 700; color: var(--text); }
+.goal-period-tabs { display: flex; gap: 4px; }
+.gpt { padding: 4px 10px; border-radius: 5px; font-size: 11px; font-weight: 600; cursor: pointer; border: 1px solid var(--border2); background: none; color: var(--muted); font-family: 'Geist', sans-serif; transition: all 0.12s; }
+.gpt.active { background: var(--surface2); color: var(--text); }
+.goal-row { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.goal-label { font-size: 11px; color: var(--muted); width: 100px; flex-shrink: 0; font-family: 'Geist Mono', monospace; }
+.goal-bar-wrap { flex: 1; background: var(--surface2); border-radius: 6px; height: 7px; overflow: hidden; }
+.goal-bar { height: 100%; border-radius: 6px; transition: width 0.5s ease; min-width: 0; }
+.goal-pct { font-size: 11px; color: var(--hint); font-family: 'Geist Mono', monospace; width: 34px; text-align: right; flex-shrink: 0; }
+.goal-amounts { font-size: 11px; font-family: 'Geist Mono', monospace; color: var(--text); flex-shrink: 0; }
+.goal-amounts span { color: var(--hint); }
+.goal-edit-row { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border); }
+.goal-edit-label { font-size: 11px; color: var(--muted); font-family: 'Geist Mono', monospace; flex-shrink: 0; }
+.goal-input { background: var(--surface2); border: 1px solid var(--border2); border-radius: 6px; padding: 5px 10px; color: var(--text); font-family: 'Geist Mono', monospace; font-size: 12px; outline: none; width: 90px; }
+.goal-input:focus { border-color: var(--gold); }
+.goal-save-btn { background: var(--gold); border: none; border-radius: 6px; padding: 5px 12px; font-size: 11px; font-weight: 600; color: #0f0f0f; cursor: pointer; font-family: 'Geist', sans-serif; }
+.goal-save-btn:hover { opacity: 0.85; }
 </style>
 </head>
 <body>
@@ -248,6 +262,35 @@ body { font-family: 'Geist', sans-serif; background: var(--bg); color: var(--tex
       <div class="callout-icon">⚡</div>
       <div class="callout-text"><strong>How to use this:</strong> Pick an income method from the sidebar. Each section has three tabs — <strong>Overview</strong> (what it is + how you earn), <strong>Methods</strong> (specific websites + steps to use them), and <strong>Notes</strong> (your personal saved notes). Use the AI Extractor to pull key info from YouTube videos.</div>
     </div>
+    <div class="label">Income goals</div>
+    <div class="goal-tracker">
+      <div class="goal-tracker-header">
+        <div class="goal-tracker-title">💰 Income Tracker</div>
+        <div class="goal-period-tabs">
+          <button class="gpt active" onclick="setGoalPeriod('weekly',this)">Weekly</button>
+          <button class="gpt" onclick="setGoalPeriod('monthly',this)">Monthly</button>
+          <button class="gpt" onclick="setGoalPeriod('yearly',this)">Yearly</button>
+        </div>
+      </div>
+      <div class="goal-row">
+        <div class="goal-label">Target</div>
+        <div class="goal-bar-wrap"><div class="goal-bar" id="goal-bar-target" style="width:100%;background:var(--border2)"></div></div>
+        <div class="goal-amounts">£<span id="goal-target-val">0</span></div>
+      </div>
+      <div class="goal-row">
+        <div class="goal-label">Earned</div>
+        <div class="goal-bar-wrap"><div class="goal-bar" id="goal-bar-earned" style="width:0%;background:var(--green)"></div></div>
+        <div class="goal-amounts">£<span id="goal-earned-val">0</span></div>
+        <div class="goal-pct" id="goal-pct">0%</div>
+      </div>
+      <div class="goal-edit-row">
+        <div class="goal-edit-label">Target £</div>
+        <input class="goal-input" id="goal-input-target" placeholder="500">
+        <div class="goal-edit-label">Earned £</div>
+        <input class="goal-input" id="goal-input-earned" placeholder="0">
+        <button class="goal-save-btn" onclick="saveGoal()">Save</button>
+      </div>
+    </div>
     <div class="label">Income methods</div>
     <div class="card-grid">
       <div class="card" style="cursor:pointer" onclick="go('youtube')"><div class="card-title">🎬 YouTube / Shorts</div><div class="card-body">AI-generated faceless Shorts. Script → images → voiceover → edit → upload. Primary channel: Morbid Minutes.</div><span class="card-tag ca">Active</span></div>
@@ -271,7 +314,7 @@ body { font-family: 'Geist', sans-serif; background: var(--bg); color: var(--tex
   <div class="ipanel active" style="padding-top:24px;">
     <div class="callout callout-gold">
       <div class="callout-icon">💡</div>
-      <div class="callout-text"><strong>How to use:</strong> On YouTube, click "…" under a video → <strong>Show transcript</strong>. Copy all the text, paste below. Pick a category and hit Extract.</div>
+      <div class="callout-text"><strong>YouTube:</strong> Click "…" under a video → <strong>Show transcript</strong> → select all → copy and paste below.<br><br><strong>TikTok:</strong> Download the video using <a href="https://snaptik.app" target="_blank" style="color:var(--gold)">snaptik.app</a>, then paste the link into <a href="https://www.tiktok-transcript.com" target="_blank" style="color:var(--gold)">tiktok-transcript.com</a> to get the text.<br><br><strong>Instagram:</strong> Tap the three dots on a post → <strong>Copy</strong> to grab the caption. For Reels, use <a href="https://downloadgram.org" target="_blank" style="color:var(--gold)">downloadgram.org</a> to extract the spoken text. Then paste below, pick a category and hit Extract.</div>
     </div>
     <div class="label">1. Paste content</div>
     <textarea class="ext-input" id="ext-input" placeholder="Paste YouTube transcript, article, or any text here..."></textarea>
@@ -668,65 +711,48 @@ const NOTE_IDS = ['n-general','n-youtube','n-freelance','n-dropship','n-products
 function buildEditor(id, placeholder) {
   const wrap = document.getElementById(id);
   if (!wrap) return;
-  wrap.dataset.placeholder = placeholder;
-  wrap.dataset.noteCount = '0';
-  wrap.innerHTML = '';
-  addNoteBlock(id, placeholder);
-  // Add another note button
-  const addBtn = document.createElement('button');
-  addBtn.className = 'add-note-btn';
-  addBtn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add another note`;
-  addBtn.onclick = () => addNoteBlock(id, placeholder);
-  wrap.appendChild(addBtn);
-}
-
-function addNoteBlock(wrapId, placeholder) {
-  const wrap = document.getElementById(wrapId);
-  if (!wrap) return;
-  const count = parseInt(wrap.dataset.noteCount || '0');
-  const blockId = wrapId + '-' + count;
-  wrap.dataset.noteCount = count + 1;
-
-  const block = document.createElement('div');
-  block.className = 'note-block';
-  block.id = blockId + '-block';
-  block.innerHTML = `
-    <div class="note-toolbar" id="${blockId}-toolbar" style="display:none">
-      <button onclick="noteCmd('${blockId}','h1')">H Heading</button>
-      <button onclick="noteCmd('${blockId}','h2')">H2 Sub</button>
-      <button onclick="noteCmd('${blockId}','p')">Normal</button>
-      <button onclick="noteCmd('${blockId}','li')">• Bullet</button>
-      <button class="done-btn" onclick="toggleEdit('${blockId}',false)">✓ Done</button>
+  wrap.innerHTML = `
+    <div class="note-toolbar" id="${id}-toolbar">
+      <button onclick="noteCmd('${id}','h1')">H Heading</button>
+      <button onclick="noteCmd('${id}','h2')">H2 Sub</button>
+      <button onclick="noteCmd('${id}','p')">Normal</button>
+      <button onclick="noteCmd('${id}','li')">• Bullet</button>
+      <button class="done-btn" onclick="toggleEdit('${id}',false)">✓ Done</button>
     </div>
-    <div class="note-area" id="${blockId}-editor" contenteditable="false" data-placeholder="${placeholder}"></div>
-    <div class="note-footer">
-      <div class="save-label" id="${blockId}-lbl">autosaved</div>
-      <button class="note-edit-btn" id="${blockId}-editbtn" onclick="toggleEdit('${blockId}',true)">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-        Edit
+    <div class="note-area" id="${id}-editor" contenteditable="false" data-placeholder="${placeholder}"></div>
+    <div style="display:flex;align-items:center;gap:10px;margin-top:6px">
+      <div class="save-label" id="${id}-lbl">autosaved</div>
+      <button class="note-toolbar" style="margin:0;background:none;border:none;padding:0" onclick="toggleEdit('${id}',true)">
+        <button class="edit-btn" style="margin-left:0" onclick="toggleEdit('${id}',true)">✏ Edit</button>
       </button>
     </div>`;
 
-  // Insert before the add button (last child)
-  const addBtn = wrap.querySelector('.add-note-btn');
-  if (addBtn) wrap.insertBefore(block, addBtn);
-  else wrap.appendChild(block);
+  // Fix: just have one edit button outside toolbar nesting
+  wrap.innerHTML = `
+    <div class="note-toolbar" id="${id}-toolbar" style="display:none">
+      <button onclick="noteCmd('${id}','h1')">H Heading</button>
+      <button onclick="noteCmd('${id}','h2')">H2 Sub</button>
+      <button onclick="noteCmd('${id}','p')">Normal</button>
+      <button onclick="noteCmd('${id}','li')">• Bullet</button>
+      <button class="done-btn" onclick="toggleEdit('${id}',false)">✓ Done</button>
+    </div>
+    <div class="note-area" id="${id}-editor" contenteditable="false" data-placeholder="${placeholder}"></div>
+    <div style="display:flex;align-items:center;gap:10px;margin-top:6px">
+      <div class="save-label" id="${id}-lbl">autosaved</div>
+      <button id="${id}-editbtn" class="note-toolbar" style="margin:0;padding:0;border:none;background:none;display:flex" onclick="toggleEdit('${id}',true)"><button class="edit-btn" style="margin:0" onclick="toggleEdit('${id}',true)">✏ Edit</button></button>
+    </div>`;
 
-  const editor = document.getElementById(blockId+'-editor');
-  // Load saved content
+  const editor = document.getElementById(id+'-editor');
   try {
-    const saved = localStorage.getItem('rich_'+blockId);
+    const saved = localStorage.getItem('rich_'+id);
     if (saved) editor.innerHTML = saved;
   } catch(e){}
 
   editor.addEventListener('input', () => {
-    try { localStorage.setItem('rich_'+blockId, editor.innerHTML); } catch(e){}
-    const lbl = document.getElementById(blockId+'-lbl');
+    try { localStorage.setItem('rich_'+id, editor.innerHTML); } catch(e){}
+    const lbl = document.getElementById(id+'-lbl');
     if (lbl) { lbl.textContent = 'saved ✓'; lbl.classList.add('ok'); setTimeout(()=>{ lbl.textContent='autosaved'; lbl.classList.remove('ok'); },1500); }
   });
-
-  // Auto-open in edit mode if empty
-  if (!editor.innerHTML.trim()) toggleEdit(blockId, true);
 }
 
 function toggleEdit(id, editing) {
@@ -736,11 +762,8 @@ function toggleEdit(id, editing) {
   if (!editor) return;
   editor.contentEditable = editing ? 'true' : 'false';
   if (toolbar) toolbar.style.display = editing ? 'flex' : 'none';
-  if (editBtn) editBtn.style.display = editing ? 'none' : 'inline-flex';
-  if (editing) {
-    editor.focus();
-    try { const r=document.createRange(); r.selectNodeContents(editor); r.collapse(false); const s=window.getSelection(); s.removeAllRanges(); s.addRange(r); } catch(e){}
-  }
+  if (editBtn) editBtn.style.display = editing ? 'none' : 'flex';
+  if (editing) { editor.focus(); try { const r=document.createRange(); r.selectNodeContents(editor); r.collapse(false); const s=window.getSelection(); s.removeAllRanges(); s.addRange(r); } catch(e){} }
 }
 
 function noteCmd(id, tag) {
@@ -787,15 +810,47 @@ function noteCmd(id, tag) {
   editor.dispatchEvent(new Event('input'));
 }
 
-// Legacy saveNote stub (keep for compatibility)
-function saveNote(id) {}
+// ── GOAL TRACKER ──
+let goalPeriod = 'weekly';
+function setGoalPeriod(period, btn) {
+  goalPeriod = period;
+  document.querySelectorAll('.gpt').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  loadGoal();
+}
+function saveGoal() {
+  const target = parseFloat(document.getElementById('goal-input-target').value) || 0;
+  const earned = parseFloat(document.getElementById('goal-input-earned').value) || 0;
+  try { localStorage.setItem('goal_'+goalPeriod, JSON.stringify({target, earned})); } catch(e){}
+  renderGoal(target, earned);
+}
+function loadGoal() {
+  try {
+    const d = JSON.parse(localStorage.getItem('goal_'+goalPeriod)||'{}');
+    const target = d.target || 0;
+    const earned = d.earned || 0;
+    document.getElementById('goal-input-target').value = target || '';
+    document.getElementById('goal-input-earned').value = earned || '';
+    renderGoal(target, earned);
+  } catch(e){}
+}
+function renderGoal(target, earned) {
+  document.getElementById('goal-target-val').textContent = target.toLocaleString();
+  document.getElementById('goal-earned-val').textContent = earned.toLocaleString();
+  const pct = target > 0 ? Math.min(Math.round((earned/target)*100), 100) : 0;
+  document.getElementById('goal-bar-earned').style.width = pct + '%';
+  document.getElementById('goal-pct').textContent = pct + '%';
+  // Colour: red < 33%, amber < 66%, green >= 66%
+  const bar = document.getElementById('goal-bar-earned');
+  bar.style.background = pct >= 66 ? 'var(--green)' : pct >= 33 ? 'var(--gold)' : 'var(--red)';
+}
+
 
 window.addEventListener('load', () => {
-  // Build rich editors — find all .note-wrap divs
   document.querySelectorAll('.note-wrap[data-note-id]').forEach(wrap => {
     buildEditor(wrap.dataset.noteId, wrap.dataset.placeholder || 'Start typing...');
   });
-  injectForms();
+  loadGoal();
 });
 
 // Extractor

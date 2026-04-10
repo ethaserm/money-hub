@@ -241,6 +241,7 @@ body { font-family: 'Geist', sans-serif; background: var(--bg); color: var(--tex
     <div class="nav-item" onclick="go('youtube')"><div class="nav-dot" style="background:var(--red)"></div>YouTube / Shorts</div>
     <div class="nav-item" onclick="go('freelance')"><div class="nav-dot" style="background:var(--blue)"></div>Freelancing</div>
     <div class="nav-item" onclick="go('dropship')"><div class="nav-dot" style="background:var(--orange)"></div>Dropshipping</div>
+    <div class="nav-item" onclick="go('trading')"><div class="nav-dot" style="background:var(--gold)"></div>Trading</div>
     <div class="nav-item" onclick="go('products')"><div class="nav-dot" style="background:var(--green)"></div>Selling Products</div>
     <div class="nav-item" onclick="go('clothing')"><div class="nav-dot" style="background:var(--pink)"></div>Selling Clothing</div>
     <div class="nav-item" onclick="go('apps')"><div class="nav-dot" style="background:var(--purple)"></div>Building Apps</div>
@@ -296,6 +297,7 @@ body { font-family: 'Geist', sans-serif; background: var(--bg); color: var(--tex
       <div class="card" style="cursor:pointer" onclick="go('youtube')"><div class="card-title">🎬 YouTube / Shorts</div><div class="card-body">AI-generated faceless Shorts. Script → images → voiceover → edit → upload. Primary channel: Morbid Minutes.</div><span class="card-tag ca">Active</span></div>
       <div class="card" style="cursor:pointer" onclick="go('freelance')"><div class="card-title">💼 Freelancing</div><div class="card-body">Sell web design and app builds on Fiverr and Upwork. Zero upfront cost.</div><span class="card-tag cb">Explore</span></div>
       <div class="card" style="cursor:pointer" onclick="go('dropship')"><div class="card-title">📦 Dropshipping</div><div class="card-body">Sell products without holding stock. Supplier ships direct, you keep the margin.</div><span class="card-tag co">Explore</span></div>
+      <div class="card" style="cursor:pointer" onclick="go('trading')"><div class="card-title">📈 Trading</div><div class="card-body">Stocks, crypto, forex — buy and sell assets to make a profit.</div><span class="card-tag ca">Explore</span></div>
       <div class="card" style="cursor:pointer" onclick="go('products')"><div class="card-title">🛍️ Selling Products</div><div class="card-body">Digital products — templates, guides, tools. Make once, sell unlimited times.</div><span class="card-tag cg">Passive</span></div>
       <div class="card" style="cursor:pointer" onclick="go('clothing')"><div class="card-title">👕 Selling Clothing</div><div class="card-body">Print-on-demand — design it, they print and ship. Zero stock needed.</div><span class="card-tag ck">Explore</span></div>
       <div class="card" style="cursor:pointer" onclick="go('apps')"><div class="card-title">📱 Building Apps</div><div class="card-body">Build web apps and tools. Sell on marketplaces, subscriptions, or freelance builds.</div><span class="card-tag cp">Active</span></div>
@@ -340,6 +342,30 @@ body { font-family: 'Geist', sans-serif; background: var(--bg); color: var(--tex
         <button class="ext-action-btn" onclick="copyResult()">Copy</button>
         <button class="ext-action-btn" onclick="clearExt()">Clear</button>
       </div>
+      <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">
+        <div style="font-size:11px;color:var(--muted);font-family:'Geist Mono',monospace;margin-bottom:8px;">Save result to a section:</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+          <select id="ext-save-section" style="background:var(--surface2);border:1px solid var(--border2);border-radius:7px;padding:6px 10px;color:var(--text);font-family:'Geist',sans-serif;font-size:12px;outline:none;cursor:pointer">
+            <option value="">— Pick section —</option>
+            <option value="youtube">YouTube / Shorts</option>
+            <option value="freelance">Freelancing</option>
+            <option value="dropship">Dropshipping</option>
+            <option value="products">Selling Products</option>
+            <option value="clothing">Selling Clothing</option>
+            <option value="apps">Building Apps</option>
+            <option value="websites">Building Websites</option>
+            <option value="aitools">AI Tools</option>
+            <option value="trading">Trading</option>
+          </select>
+          <select id="ext-save-tab" style="background:var(--surface2);border:1px solid var(--border2);border-radius:7px;padding:6px 10px;color:var(--text);font-family:'Geist',sans-serif;font-size:12px;outline:none;cursor:pointer">
+            <option value="notes">Notes</option>
+            <option value="methods">Methods (custom)</option>
+            <option value="websites">Websites (custom)</option>
+          </select>
+          <button onclick="saveExtractToSection()" style="background:var(--green);border:none;border-radius:7px;padding:6px 14px;font-size:12px;font-weight:600;color:#0f0f0f;cursor:pointer;font-family:'Geist',sans-serif;">Save there</button>
+          <span id="ext-save-msg" style="font-size:11px;color:var(--green);font-family:'Geist Mono',monospace;display:none">Saved ✓</span>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -370,11 +396,19 @@ body { font-family: 'Geist', sans-serif; background: var(--bg); color: var(--tex
     <div class="itab" onclick="itab(this,'youtube','notes')">Notes</div>
   </div>
   <div id="youtube-websites" class="ipanel">
+    <div class="label">My Channels</div>
+    <div class="site-grid">
+      <a class="site-card" href="https://studio.youtube.com/channel/UC0TQF8WDKQI0VLXTbL5UM7Q" target="_blank">
+        <div class="site-card-name">Ranking Channel</div>
+        <div class="site-card-desc">My ranking videos YouTube channel — manage, upload and check analytics</div>
+        <div class="site-card-url">studio.youtube.com</div>
+      </a>
+    </div>
   </div>
   <div id="youtube-overview" class="ipanel active">
     <div class="callout callout-teal">
-      <div class="callout-icon">🎬</div>
-      <div class="callout-text"><strong>Primary channel: Morbid Minutes</strong> — dark history facts. Full workflow: script → images → animation → voiceover → edit → upload. See your AI Short Routine HTML for the full step-by-step.</div>
+      <div class="callout-icon">📒</div>
+      <div class="callout-text"><strong>Full YouTube notes on Notion:</strong> <a href="https://www.notion.so/YouTube-3391e9bacdc18055b4cffc0bdffb5d4" target="_blank" style="color:var(--gold)">Open Notion →</a></div>
     </div>
     <div class="label">How you make money</div>
     <div class="card-grid">
@@ -484,6 +518,40 @@ body { font-family: 'Geist', sans-serif; background: var(--bg); color: var(--tex
   <div id="dropship-notes" class="ipanel">
     <div class="label">Dropshipping notes</div>
     <div class="note-wrap" id="n-dropship" data-note-id="n-dropship" data-placeholder="Product ideas, supplier notes, store URLs, what's working..."></div>
+  </div>
+</div>
+
+<!-- ═══ TRADING ═══ -->
+<div id="page-trading" class="page">
+  <div class="page-header">
+    <div class="page-title">📈 Trading</div>
+    <div class="page-desc">stocks, crypto, forex — buy and sell assets</div>
+  </div>
+  <div class="inner-tabs">
+    <div class="itab active" onclick="itab(this,'trading','overview')">Overview</div>
+    <div class="itab" onclick="itab(this,'trading','methods')">Methods</div>
+    <div class="itab" onclick="itab(this,'trading','websites')">Websites</div>
+    <div class="itab" onclick="itab(this,'trading','cheatsheet')">Cheat Sheet</div>
+    <div class="itab" onclick="itab(this,'trading','notes')">Notes</div>
+  </div>
+  <div id="trading-overview" class="ipanel active">
+    <div class="callout callout-gold">
+      <div class="callout-icon">📈</div>
+      <div class="callout-text">Buy and sell assets — stocks, crypto, forex — to make a profit. Always start on a demo account and never risk more than you can afford to lose.</div>
+    </div>
+  </div>
+  <div id="trading-methods" class="ipanel"></div>
+  <div id="trading-websites" class="ipanel"></div>
+  <div id="trading-cheatsheet" class="ipanel">
+    <div class="callout callout-gold">
+      <div class="callout-icon">📋</div>
+      <div class="callout-text">Your personal trading cheat sheet. Use the note editor below to build it out with headings, bullet points and key rules.</div>
+    </div>
+    <div class="note-wrap" id="n-trading-cheatsheet" data-note-id="n-trading-cheatsheet" data-placeholder="Add your trading rules, setups, key levels, risk management..."></div>
+  </div>
+  <div id="trading-notes" class="ipanel">
+    <div class="label">Trading notes</div>
+    <div class="note-wrap" id="n-trading" data-note-id="n-trading" data-placeholder="Strategy notes, trade ideas, platforms to research..."></div>
   </div>
 </div>
 
@@ -887,9 +955,51 @@ async function runExtract() {
 function copyResult() { navigator.clipboard.writeText(extResult).then(() => alert('Copied!')); }
 function clearExt() { document.getElementById('ext-input').value = ''; document.getElementById('ext-result').classList.remove('show'); extResult = ''; }
 
+function saveExtractToSection() {
+  const section = document.getElementById('ext-save-section').value;
+  const tab = document.getElementById('ext-save-tab').value;
+  if (!section) return alert('Pick a section first.');
+  if (!extResult) return alert('Nothing to save — run Extract first.');
+
+  if (tab === 'notes') {
+    // Append to the section's rich note editor
+    const editorId = 'n-' + section + '-0-editor';
+    const editor = document.getElementById(editorId);
+    if (editor) {
+      // Append as a paragraph block
+      const p = document.createElement('p');
+      p.textContent = extResult;
+      editor.appendChild(p);
+      try { localStorage.setItem('rich_n-' + section + '-0', editor.innerHTML); } catch(e){}
+    } else {
+      // Fallback: save to localStorage directly
+      try {
+        const existing = localStorage.getItem('rich_n-' + section + '-0') || '';
+        localStorage.setItem('rich_n-' + section + '-0', existing + '<p>' + extResult.replace(/\n/g,'</p><p>') + '</p>');
+      } catch(e){}
+    }
+  } else if (tab === 'methods') {
+    // Save as a custom method
+    const arr = getMethods(section);
+    arr.push({ title: 'Extracted: ' + new Date().toLocaleDateString('en-GB'), desc: extResult.slice(0, 500) });
+    saveMethods(section, arr);
+    renderCustomMethods(section);
+  } else if (tab === 'websites') {
+    // Not ideal for websites but save as a note fallback
+    const arr = getMethods(section);
+    arr.push({ title: 'Extracted info', desc: extResult.slice(0, 500) });
+    saveMethods(section, arr);
+  }
+
+  // Show confirmation
+  const msg = document.getElementById('ext-save-msg');
+  msg.style.display = 'inline';
+  setTimeout(() => msg.style.display = 'none', 2500);
+}
+
 
 // ── CUSTOM SITES & METHODS ──
-const SECTIONS = ['youtube','freelance','dropship','products','clothing','apps','websites','aitools'];
+const SECTIONS = ['youtube','freelance','dropship','trading','products','clothing','apps','websites','aitools'];
 
 function getSites(section) {
   try { return JSON.parse(localStorage.getItem('custom_sites_'+section)||'[]'); } catch(e){ return []; }

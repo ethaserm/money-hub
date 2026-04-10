@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Money Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600&family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0f0f0f;
+  --sidebar: #141414;
+  --surface: #1a1a1a;
+  --surface2: #222;
+  --border: #282828;
+  --border2: #333;
+  --text: #e8e8e8;
+  --muted: #777;
+  --hint: #3d3d3d;
+  --gold: #d4a843; --gold-dim: rgba(212,168,67,0.1);
+  --blue: #5b8af0; --blue-dim: rgba(91,138,240,0.1);
+  --green: #4ecb71; --green-dim: rgba(78,203,113,0.1);
+  --red: #e05c5c; --red-dim: rgba(224,92,92,0.1);
+  --purple: #9b72f5; --purple-dim: rgba(155,114,245,0.1);
+  --teal: #3ecfb8; --teal-dim: rgba(62,207,184,0.1);
+  --orange: #f0834a; --orange-dim: rgba(240,131,74,0.1);
+  --pink: #e96b9a; --pink-dim: rgba(233,107,154,0.1);
+}
+
+html, body { height: 100%; }
+body { font-family: 'Geist', sans-serif; background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; font-size: 14px; line-height: 1.6; }
+.layout { display: flex; flex: 1; overflow: hidden; }
+.toggle-btn { position: fixed; top: 12px; left: 12px; z-index: 200; background: var(--surface); border: 1px solid var(--border2); border-radius: 6px; color: var(--muted); cursor: pointer; padding: 6px 9px; font-size: 14px; line-height: 1; transition: color 0.12s, background 0.12s; }
+.toggle-btn:hover { color: var(--text); background: var(--surface2); }
+
+/* SIDEBAR */
+.sidebar { width: 220px; flex-shrink: 0; background: var(--sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; height: 100vh; overflow-y: auto; scrollbar-width: none; transition: width 0.2s ease; overflow: hidden; }
+.sidebar.collapsed { width: 0; border-right: none; }
+.sidebar::-webkit-scrollbar { display: none; }
+.sidebar-logo { padding: 14px 12px 14px 44px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; min-width: 220px; }
+.sidebar-logo-inner { overflow: hidden; }
+.sidebar-logo-title { font-family: 'Geist Mono', monospace; font-size: 13px; font-weight: 600; color: var(--text); letter-spacing: -0.02em; white-space: nowrap; }
+.sidebar-logo-sub { font-size: 10px; color: var(--muted); margin-top: 2px; font-family: 'Geist Mono', monospace; white-space: nowrap; }
+.sidebar-toggle-outer { flex-shrink: 0; padding: 10px 8px; border-bottom: 1px solid var(--border); }
+.sidebar-toggle { background: none; border: 1px solid var(--border); border-radius: 5px; color: var(--muted); cursor: pointer; padding: 5px 8px; font-size: 13px; transition: color 0.12s, background 0.12s; display: block; }
+.sidebar-toggle:hover { color: var(--text); background: var(--surface); }
+/* Website cards */
+.site-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-bottom: 6px; }
+.site-card { display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px; text-decoration: none; transition: border-color 0.12s; }
+.site-card:hover { border-color: var(--border2); }
+.site-card-name { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+.site-card-desc { font-size: 11px; color: var(--muted); line-height: 1.5; font-family: 'Geist Mono', monospace; flex: 1; }
+.site-card-url { font-size: 10px; color: var(--hint); margin-top: 8px; font-family: 'Geist Mono', monospace; }
+.sidebar-section { padding: 14px 10px 6px; min-width: 220px; }
+.sidebar-section-label { font-size: 9px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--hint); padding: 0 6px; margin-bottom: 4px; font-family: 'Geist Mono', monospace; white-space: nowrap; }
+.nav-item { display: flex; align-items: center; gap: 9px; padding: 7px 8px; border-radius: 7px; cursor: pointer; color: var(--muted); font-size: 13px; font-weight: 500; transition: background 0.12s, color 0.12s; user-select: none; margin-bottom: 1px; }
+.nav-item:hover { background: var(--surface); color: var(--text); }
+.nav-item.active { background: var(--surface2); color: var(--text); }
+.nav-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
+/* MAIN */
+.main { flex: 1; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--border2) transparent; }
+.main::-webkit-scrollbar { width: 5px; }
+.main::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+.page { display: none; max-width: 860px; }
+.page.active { display: block; }
+
+/* PAGE HEADER */
+.page-header { padding: 32px 36px 0 52px; }
+.page-title { font-size: 26px; font-weight: 700; letter-spacing: -0.04em; color: var(--text); line-height: 1.1; }
+.page-desc { font-size: 13px; color: var(--muted); margin-top: 6px; font-family: 'Geist Mono', monospace; }
+
+/* INNER TABS */
+.inner-tabs { display: flex; gap: 2px; padding: 20px 36px 0; border-bottom: 1px solid var(--border); }
+.itab { padding: 9px 16px 8px; font-size: 12px; font-weight: 600; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color 0.12s; user-select: none; }
+.itab:hover { color: var(--text); }
+.itab.active { color: var(--text); border-bottom-color: var(--text); }
+
+/* INNER PANELS */
+.ipanel { display: none; padding: 28px 36px 60px; }
+.ipanel.active { display: block; }
+
+/* LABELS */
+.label { font-size: 9px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--hint); margin-bottom: 10px; margin-top: 28px; font-family: 'Geist Mono', monospace; }
+.label:first-child { margin-top: 0; }
+
+/* CARDS */
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; margin-bottom: 6px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; transition: border-color 0.15s; }
+.card:hover { border-color: var(--border2); }
+.card-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+.card-body { font-size: 12px; color: var(--muted); line-height: 1.55; }
+.card-tag { display: inline-block; font-size: 9px; font-weight: 600; font-family: 'Geist Mono', monospace; padding: 2px 7px; border-radius: 4px; margin-top: 8px; margin-right: 4px; letter-spacing: 0.03em; }
+.cg { background: var(--green-dim); color: var(--green); }
+.cb { background: var(--blue-dim); color: var(--blue); }
+.ca { background: var(--gold-dim); color: var(--gold); }
+.cp { background: var(--purple-dim); color: var(--purple); }
+.ct { background: var(--teal-dim); color: var(--teal); }
+.co { background: var(--orange-dim); color: var(--orange); }
+.cr { background: var(--red-dim); color: var(--red); }
+.ck { background: var(--pink-dim); color: var(--pink); }
+
+/* LINK GRID */
+.link-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(165px, 1fr)); gap: 8px; margin-bottom: 6px; }
+.link-card { display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; text-decoration: none; transition: border-color 0.12s, background 0.12s; }
+.link-card:hover { border-color: var(--border2); background: var(--surface2); }
+.link-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.link-name { font-size: 12px; font-weight: 600; color: var(--text); }
+.link-sub { font-size: 10px; color: var(--muted); font-family: 'Geist Mono', monospace; }
+
+/* METHOD ROWS */
+.method { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; margin-bottom: 10px; transition: border-color 0.12s; }
+.method:hover { border-color: var(--border2); }
+.method-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; flex-wrap: wrap; gap: 6px; }
+.method-title { font-size: 13px; font-weight: 600; color: var(--text); }
+.method-tags { display: flex; gap: 5px; flex-wrap: wrap; }
+.method-desc { font-size: 12px; color: var(--muted); line-height: 1.55; margin-bottom: 10px; }
+.method-sites { display: flex; flex-wrap: wrap; gap: 6px; }
+.method-link { display: inline-flex; align-items: center; gap: 6px; background: var(--surface2); border: 1px solid var(--border2); border-radius: 6px; padding: 4px 10px; text-decoration: none; font-size: 11px; font-weight: 600; color: var(--text); transition: border-color 0.12s; }
+.method-link:hover { border-color: var(--muted); }
+.method-link-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+
+/* STEPS */
+.step-list { display: flex; flex-direction: column; gap: 8px; }
+.step { display: flex; gap: 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+.step-num { font-family: 'Geist Mono', monospace; font-size: 11px; color: var(--hint); padding-top: 2px; flex-shrink: 0; width: 22px; }
+.step-body { flex: 1; }
+.step-title { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+.step-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+/* CALLOUT */
+.callout { display: flex; gap: 10px; border-radius: 9px; padding: 12px 14px; margin-bottom: 20px; font-size: 12px; line-height: 1.55; }
+.callout-icon { flex-shrink: 0; font-size: 14px; }
+.callout-text { color: var(--muted); }
+.callout-text strong { color: var(--text); }
+.callout-gold { background: var(--gold-dim); border: 1px solid rgba(212,168,67,0.2); }
+.callout-blue { background: var(--blue-dim); border: 1px solid rgba(91,138,240,0.2); }
+.callout-green { background: var(--green-dim); border: 1px solid rgba(78,203,113,0.2); }
+.callout-teal { background: var(--teal-dim); border: 1px solid rgba(62,207,184,0.2); }
+.callout-orange { background: var(--orange-dim); border: 1px solid rgba(240,131,74,0.2); }
+.callout-pink { background: var(--pink-dim); border: 1px solid rgba(233,107,154,0.2); }
+.callout-purple { background: var(--purple-dim); border: 1px solid rgba(155,114,245,0.2); }
+
+/* DIVIDER */
+.divider { border: none; border-top: 1px solid var(--border); margin: 22px 0; }
+
+/* NOTES - rich editor */
+.note-wrap { margin-bottom: 6px; }
+.note-toolbar { display: flex; gap: 4px; margin-bottom: 6px; flex-wrap: wrap; align-items: center; }
+.note-toolbar button { background: var(--surface2); border: 1px solid var(--border2); border-radius: 5px; color: var(--muted); cursor: pointer; padding: 4px 10px; font-size: 11px; font-weight: 600; font-family: 'Geist', sans-serif; transition: all 0.12s; }
+.note-toolbar button:hover { color: var(--text); border-color: var(--muted); }
+.note-toolbar .edit-btn { margin-left: auto; background: var(--surface2); border-color: var(--border2); }
+.note-toolbar .done-btn { margin-left: auto; background: var(--green-dim); border-color: var(--green); color: var(--green); }
+.note-area { width: 100%; min-height: 200px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; color: var(--text); font-family: 'Geist', sans-serif; font-size: 13px; line-height: 1.75; outline: none; transition: border-color 0.15s; margin-bottom: 0; overflow-y: auto; }
+.note-area[contenteditable="true"] { border-color: var(--border2); }
+.note-area[contenteditable="false"] { cursor: default; }
+.note-area[data-placeholder]:empty::before { content: attr(data-placeholder); color: var(--hint); pointer-events: none; display: block; }
+.note-area h1 { font-size: 20px; font-weight: 700; color: var(--text); margin: 10px 0 4px; line-height: 1.2; }
+.note-area h2 { font-size: 15px; font-weight: 600; color: var(--text); margin: 8px 0 2px; }
+.note-area p { margin: 2px 0; color: var(--muted); }
+.note-area ul { padding-left: 20px; color: var(--muted); margin: 2px 0; }
+.note-area li { margin: 1px 0; }
+.save-label { font-size: 10px; color: var(--hint); font-family: 'Geist Mono', monospace; }
+.save-label.ok { color: var(--green); }
+/* Add form */
+.add-form { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; margin-top: 4px; }
+.add-input { flex: 1; min-width: 140px; background: var(--surface); border: 1px solid var(--border2); border-radius: 7px; padding: 8px 12px; color: var(--text); font-family: 'Geist', sans-serif; font-size: 12px; outline: none; }
+.add-input:focus { border-color: var(--gold); }
+.add-input::placeholder { color: var(--hint); }
+.add-btn { background: var(--gold); border: none; border-radius: 7px; padding: 8px 14px; font-size: 12px; font-weight: 600; color: #0f0f0f; cursor: pointer; font-family: 'Geist', sans-serif; white-space: nowrap; }
+.add-btn:hover { opacity: 0.85; }
+.site-card { position: relative; }
+.site-card .del-btn { display: none; position: absolute; top: 8px; right: 8px; background: var(--red-dim); border: 1px solid var(--red); border-radius: 4px; color: var(--red); font-size: 10px; padding: 2px 6px; cursor: pointer; font-family: 'Geist', sans-serif; }
+.site-card:hover .del-btn { display: block; }
+.method-del { float: right; background: var(--red-dim); border: 1px solid var(--red); border-radius: 4px; color: var(--red); font-size: 10px; padding: 2px 6px; cursor: pointer; font-family: 'Geist', sans-serif; margin-left: 8px; }
+
+/* EXTRACTOR */
+.ext-input { width: 100%; min-height: 140px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px; color: var(--text); font-family: 'Geist Mono', monospace; font-size: 12px; line-height: 1.7; resize: vertical; outline: none; transition: border-color 0.15s; margin-bottom: 10px; }
+.ext-input:focus { border-color: var(--border2); }
+.ext-input::placeholder { color: var(--hint); }
+.cat-grid { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+.cat-btn { padding: 5px 12px; border-radius: 6px; border: 1px solid var(--border2); background: var(--surface); color: var(--muted); font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.12s; font-family: 'Geist', sans-serif; }
+.cat-btn:hover { background: var(--surface2); color: var(--text); }
+.cat-btn.sel { border-color: var(--gold); background: var(--gold-dim); color: var(--gold); }
+.run-btn { display: flex; align-items: center; gap: 8px; background: var(--gold); border: none; border-radius: 8px; padding: 10px 20px; font-size: 13px; font-weight: 600; color: #0f0f0f; cursor: pointer; transition: opacity 0.12s; font-family: 'Geist', sans-serif; margin-bottom: 16px; }
+.run-btn:hover { opacity: 0.88; }
+.run-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.ext-result { display: none; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+.ext-result.show { display: block; }
+.ext-result-text { font-family: 'Geist Mono', monospace; font-size: 12px; color: var(--muted); line-height: 1.75; white-space: pre-wrap; word-break: break-word; }
+.ext-actions { display: flex; gap: 8px; margin-top: 12px; }
+.ext-action-btn { padding: 6px 12px; border-radius: 6px; background: var(--surface2); border: 1px solid var(--border2); color: var(--muted); font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.12s; font-family: 'Geist', sans-serif; }
+.ext-action-btn:hover { color: var(--text); background: var(--border); }
+.progress-bar { height: 3px; background: var(--border); border-radius: 2px; margin-bottom: 16px; overflow: hidden; display: none; }
+.progress-bar.show { display: block; }
+.progress-fill { height: 100%; background: var(--gold); border-radius: 2px; width: 0; transition: width 0.3s ease; }
+/* GOAL TRACKER */
+.goal-tracker { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+.goal-tracker-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 8px; }
+.goal-tracker-title { font-size: 13px; font-weight: 700; color: var(--text); }
+.goal-period-tabs { display: flex; gap: 4px; }
+.gpt { padding: 4px 10px; border-radius: 5px; font-size: 11px; font-weight: 600; cursor: pointer; border: 1px solid var(--border2); background: none; color: var(--muted); font-family: 'Geist', sans-serif; transition: all 0.12s; }
+.gpt.active { background: var(--surface2); color: var(--text); }
+.goal-row { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.goal-label { font-size: 11px; color: var(--muted); width: 100px; flex-shrink: 0; font-family: 'Geist Mono', monospace; }
+.goal-bar-wrap { flex: 1; background: var(--surface2); border-radius: 6px; height: 7px; overflow: hidden; }
+.goal-bar { height: 100%; border-radius: 6px; transition: width 0.5s ease; min-width: 0; }
+.goal-pct { font-size: 11px; color: var(--hint); font-family: 'Geist Mono', monospace; width: 34px; text-align: right; flex-shrink: 0; }
+.goal-amounts { font-size: 11px; font-family: 'Geist Mono', monospace; color: var(--text); flex-shrink: 0; }
+.goal-amounts span { color: var(--hint); }
+.goal-edit-row { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border); }
+.goal-edit-label { font-size: 11px; color: var(--muted); font-family: 'Geist Mono', monospace; flex-shrink: 0; }
+.goal-input { background: var(--surface2); border: 1px solid var(--border2); border-radius: 6px; padding: 5px 10px; color: var(--text); font-family: 'Geist Mono', monospace; font-size: 12px; outline: none; width: 90px; }
+.goal-input:focus { border-color: var(--gold); }
+.goal-save-btn { background: var(--gold); border: none; border-radius: 6px; padding: 5px 12px; font-size: 11px; font-weight: 600; color: #0f0f0f; cursor: pointer; font-family: 'Geist', sans-serif; }
+.goal-save-btn:hover { opacity: 0.85; }
+</style>
+</head>
+<body>
+<button class="toggle-btn" onclick="toggleSidebar()" title="Toggle sidebar">☰</button>
+
+<div class="layout">
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-inner">
+      <div class="sidebar-logo-title">💰 AI Money Hub</div>
+      <div class="sidebar-logo-sub">Ethan's income reference</div>
+    </div>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Main</div>
+    <div class="nav-item active" onclick="go('home')"><div class="nav-dot" style="background:#555"></div>Home</div>
+    <div class="nav-item" onclick="go('extractor')"><div class="nav-dot" style="background:var(--gold)"></div>AI Extractor</div>
+    <div class="nav-item" onclick="go('notes')"><div class="nav-dot" style="background:var(--blue)"></div>My Notes</div>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Income Methods</div>
+    <div class="nav-item" onclick="go('youtube')"><div class="nav-dot" style="background:var(--red)"></div>YouTube / Shorts</div>
+    <div class="nav-item" onclick="go('freelance')"><div class="nav-dot" style="background:var(--blue)"></div>Freelancing</div>
+    <div class="nav-item" onclick="go('dropship')"><div class="nav-dot" style="background:var(--orange)"></div>Dropshipping</div>
+    <div class="nav-item" onclick="go('trading')"><div class="nav-dot" style="background:var(--gold)"></div>Trading</div>
+    <div class="nav-item" onclick="go('products')"><div class="nav-dot" style="background:var(--green)"></div>Selling Products</div>
+    <div class="nav-item" onclick="go('clothing')"><div class="nav-dot" style="background:var(--pink)"></div>Selling Clothing</div>
+    <div class="nav-item" onclick="go('apps')"><div class="nav-dot" style="background:var(--purple)"></div>Building Apps</div>
+    <div class="nav-item" onclick="go('websites')"><div class="nav-dot" style="background:var(--teal)"></div>Building Websites</div>
+    <div class="nav-item" onclick="go('aitools')"><div class="nav-dot" style="background:var(--gold)"></div>AI Tools</div>
+  </div>
+</nav>
+
+<main class="main">
+
+<!-- HOME (no inner tabs needed) -->
+<div id="page-home" class="page active">
+  <div class="page-header">
+    <div class="page-title">AI Money Hub</div>
+    <div class="page-desc">your personal reference for making money online with AI</div>
+  </div>
+  <div class="ipanel active" style="padding-top:24px;">
+    <div class="callout callout-gold">
+      <div class="callout-icon">⚡</div>
+      <div class="callout-text"><strong>How to use this:</strong> Pick an income method from the sidebar. Each section has three tabs — <strong>Overview</strong> (what it is + how you earn), <strong>Methods</strong> (specific websites + steps to use them), and <strong>Notes</strong> (your personal saved notes). Use the AI Extractor to pull key info from YouTube videos.</div>
+    </div>
+    <div class="label">Income goals</div>
+    <div class="goal-tracker">
+      <div class="goal-tracker-header">
+        <div class="goal-tracker-title">💰 Income Tracker</div>
+        <div class="goal-period-tabs">
+          <button class="gpt active" onclick="setGoalPeriod('weekly',this)">Weekly</button>
+          <button class="gpt" onclick="setGoalPeriod('monthly',this)">Monthly</button>
+          <button class="gpt" onclick="setGoalPeriod('yearly',this)">Yearly</button>
+        </div>
+      </div>
+      <div class="goal-row">
+        <div class="goal-label">Target</div>
+        <div class="goal-bar-wrap"><div class="goal-bar" id="goal-bar-target" style="width:100%;background:var(--border2)"></div></div>
+        <div class="goal-amounts">£<span id="goal-target-val">0</span></div>
+      </div>
+      <div class="goal-row">
+        <div class="goal-label">Earned</div>
+        <div class="goal-bar-wrap"><div class="goal-bar" id="goal-bar-earned" style="width:0%;background:var(--green)"></div></div>
+        <div class="goal-amounts">£<span id="goal-earned-val">0</span></div>
+        <div class="goal-pct" id="goal-pct">0%</div>
+      </div>
+      <div class="goal-edit-row">
+        <div class="goal-edit-label">Target £</div>
+        <input class="goal-input" id="goal-input-target" placeholder="500">
+        <div class="goal-edit-label">Earned £</div>
+        <input class="goal-input" id="goal-input-earned" placeholder="0">
+        <button class="goal-save-btn" onclick="saveGoal()">Save</button>
+      </div>
+    </div>
+    <div class="label">Income methods</div>
+    <div class="card-grid">
+      <div class="card" style="cursor:pointer" onclick="go('youtube')"><div class="card-title">🎬 YouTube / Shorts</div><div class="card-body">AI-generated faceless Shorts. Script → images → voiceover → edit → upload. Primary channel: Morbid Minutes.</div><span class="card-tag ca">Active</span></div>
+      <div class="card" style="cursor:pointer" onclick="go('freelance')"><div class="card-title">💼 Freelancing</div><div class="card-body">Sell web design and app builds on Fiverr and Upwork. Zero upfront cost.</div><span class="card-tag cb">Explore</span></div>
+      <div class="card" style="cursor:pointer" onclick="go('dropship')"><div class="card-title">📦 Dropshipping</div><div class="card-body">Sell products without holding stock. Supplier ships direct, you keep the margin.</div><span class="card-tag co">Explore</span></div>
+      <div class="card" style="cursor:pointer" onclick="go('trading')"><div class="card-title">📈 Trading</div><div class="card-body">Stocks, crypto, forex — buy and sell assets to make a profit.</div><span class="card-tag ca">Explore</span></div>
+      <div class="card" style="cursor:pointer" onclick="go('products')"><div class="card-title">🛍️ Selling Products</div><div class="card-body">Digital products — templates, guides, tools. Make once, sell unlimited times.</div><span class="card-tag cg">Passive</span></div>
+      <div class="card" style="cursor:pointer" onclick="go('clothing')"><div class="card-title">👕 Selling Clothing</div><div class="card-body">Print-on-demand — design it, they print and ship. Zero stock needed.</div><span class="card-tag ck">Explore</span></div>
+      <div class="card" style="cursor:pointer" onclick="go('apps')"><div class="card-title">📱 Building Apps</div><div class="card-body">Build web apps and tools. Sell on marketplaces, subscriptions, or freelance builds.</div><span class="card-tag cp">Active</span></div>
+      <div class="card" style="cursor:pointer" onclick="go('websites')"><div class="card-title">🌐 Building Websites</div><div class="card-body">Build sites for local businesses. £200–£1,500 per project. High demand.</div><span class="card-tag ct">Explore</span></div>
+      <div class="card" style="cursor:pointer" onclick="go('aitools')"><div class="card-title">🤖 AI Tools</div><div class="card-body">Master the best free AI tools — image gen, video, writing, voiceover, automation.</div><span class="card-tag ca">Reference</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- AI EXTRACTOR -->
+<div id="page-extractor" class="page">
+  <div class="page-header">
+    <div class="page-title">AI Extractor</div>
+    <div class="page-desc">paste a youtube transcript or article — AI pulls out the key info</div>
+  </div>
+  <div class="ipanel active" style="padding-top:24px;">
+    <div class="callout callout-gold">
+      <div class="callout-icon">💡</div>
+      <div class="callout-text"><strong>YouTube:</strong> Click "…" under a video → <strong>Show transcript</strong> → select all → copy and paste below.<br><br><strong>TikTok:</strong> Download the video using <a href="https://snaptik.app" target="_blank" style="color:var(--gold)">snaptik.app</a>, then paste the link into <a href="https://www.tiktok-transcript.com" target="_blank" style="color:var(--gold)">tiktok-transcript.com</a> to get the text.<br><br><strong>Instagram:</strong> Tap the three dots on a post → <strong>Copy</strong> to grab the caption. For Reels, use <a href="https://downloadgram.org" target="_blank" style="color:var(--gold)">downloadgram.org</a> to extract the spoken text. Then paste below, pick a category and hit Extract.</div>
+    </div>
+    <div class="label">1. Paste content</div>
+    <textarea class="ext-input" id="ext-input" placeholder="Paste YouTube transcript, article, or any text here..."></textarea>
+    <div class="label">2. What do you want to extract?</div>
+    <div class="cat-grid">
+      <button class="cat-btn sel" data-cat="general" onclick="selCat(this)">General Tips</button>
+      <button class="cat-btn" data-cat="youtube" onclick="selCat(this)">YouTube Strategy</button>
+      <button class="cat-btn" data-cat="freelance" onclick="selCat(this)">Freelancing</button>
+      <button class="cat-btn" data-cat="dropship" onclick="selCat(this)">Dropshipping</button>
+      <button class="cat-btn" data-cat="products" onclick="selCat(this)">Selling Products</button>
+      <button class="cat-btn" data-cat="apps" onclick="selCat(this)">App Business</button>
+      <button class="cat-btn" data-cat="tools" onclick="selCat(this)">Tools & Resources</button>
+      <button class="cat-btn" data-cat="income" onclick="selCat(this)">Income Methods</button>
+    </div>
+    <div class="progress-bar" id="prog"><div class="progress-fill" id="prog-fill"></div></div>
+    <button class="run-btn" id="ext-btn" onclick="runExtract()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      Extract & Organise
+    </button>
+    <div class="ext-result" id="ext-result">
+      <div class="ext-result-text" id="ext-text"></div>
+      <div class="ext-actions">
+        <button class="ext-action-btn" onclick="copyResult()">Copy</button>
+        <button class="ext-action-btn" onclick="clearExt()">Clear</button>
+      </div>
+      <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">
+        <div style="font-size:11px;color:var(--muted);font-family:'Geist Mono',monospace;margin-bottom:8px;">Save result to a section:</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+          <select id="ext-save-section" style="background:var(--surface2);border:1px solid var(--border2);border-radius:7px;padding:6px 10px;color:var(--text);font-family:'Geist',sans-serif;font-size:12px;outline:none;cursor:pointer">
+            <option value="">— Pick section —</option>
+            <option value="youtube">YouTube / Shorts</option>
+            <option value="freelance">Freelancing</option>
+            <option value="dropship">Dropshipping</option>
+            <option value="products">Selling Products</option>
+            <option value="clothing">Selling Clothing</option>
+            <option value="apps">Building Apps</option>
+            <option value="websites">Building Websites</option>
+            <option value="aitools">AI Tools</option>
+            <option value="trading">Trading</option>
+          </select>
+          <select id="ext-save-tab" style="background:var(--surface2);border:1px solid var(--border2);border-radius:7px;padding:6px 10px;color:var(--text);font-family:'Geist',sans-serif;font-size:12px;outline:none;cursor:pointer">
+            <option value="notes">Notes</option>
+            <option value="methods">Methods (custom)</option>
+            <option value="websites">Websites (custom)</option>
+          </select>
+          <button onclick="saveExtractToSection()" style="background:var(--green);border:none;border-radius:7px;padding:6px 14px;font-size:12px;font-weight:600;color:#0f0f0f;cursor:pointer;font-family:'Geist',sans-serif;">Save there</button>
+          <span id="ext-save-msg" style="font-size:11px;color:var(--green);font-family:'Geist Mono',monospace;display:none">Saved ✓</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- GLOBAL NOTES -->
+<div id="page-notes" class="page">
+  <div class="page-header">
+    <div class="page-title">My Notes</div>
+    <div class="page-desc">all autosaved to your browser</div>
+  </div>
+  <div class="ipanel active" style="padding-top:24px;">
+    <div class="label">General notes</div>
+    <div class="note-wrap" id="n-general" data-note-id="n-general" data-placeholder="Ideas, plans, things to try..."></div>
+
+  </div>
+</div>
+
+<!-- ═══ YOUTUBE ═══ -->
+<div id="page-youtube" class="page">
+  <div class="page-header">
+    <div class="page-title">🎬 YouTube / Shorts</div>
+    <div class="page-desc">ai-generated faceless content — your main income channel</div>
+  </div>
+  <div class="inner-tabs">
+    <div class="itab active" onclick="itab(this,'youtube','overview')">Overview</div>
+    <div class="itab" onclick="itab(this,'youtube','methods')">Methods</div>
+    <div class="itab" onclick="itab(this,'youtube','websites')">Websites</div>
+    <div class="itab" onclick="itab(this,'youtube','notes')">Notes</div>
+  </div>
+  <div id="youtube-websites" class="ipanel">
+    <div class="label">My Channels</div>
+    <div class="site-grid">
+      <a class="site-card" href="https://studio.youtube.com/channel/UC0TQF8WDKQI0VLXTbL5UM7Q" target="_blank">
+        <div class="site-card-name">Ranking Channel</div>
+        <div class="site-card-desc">My ranking videos YouTube channel — manage, upload and check analytics</div>
+        <div class="site-card-url">studio.youtube.com</div>
+      </a>
+    </div>
+  </div>
+  <div id="youtube-overview" class="ipanel active">
+    <div class="callout callout-teal">
+      <div class="callout-icon">📒</div>
+      <div class="callout-text"><strong>Full YouTube notes on Notion:</strong> <a href="https://www.notion.so/YouTube-3391e9bacdc18055b4cffc0bdffb5d4" target="_blank" style="color:var(--gold)">Open Notion →</a></div>
+    </div>
+    <div class="label">How you make money</div>
+    <div class="card-grid">
+      <div class="card"><div class="card-title">AdSense</div><div class="card-body">YouTube pays per 1,000 views (CPM). Dark history / finance niches pay £8–22 CPM. Need 1,000 subs + 4,000 watch hours OR 10M Shorts views to qualify.</div><span class="card-tag ca">Main income</span></div>
+      <div class="card"><div class="card-title">Affiliate Links</div><div class="card-body">Promote tools in your descriptions (ElevenLabs, Runway). Get commission when someone signs up through your link.</div><span class="card-tag cg">Passive</span></div>
+      <div class="card"><div class="card-title">Sponsorships</div><div class="card-body">Brands pay to be mentioned in videos. Starts around 10K subs. Dark history channels can charge £200–£1K per placement.</div><span class="card-tag cb">Later</span></div>
+      <div class="card"><div class="card-title">Multiple Channels</div><div class="card-body">Run several channels in different niches. Batch-produce — script 5 videos in one session across channels.</div><span class="card-tag cp">Scale</span></div>
+    </div>
+    <div class="label">Best niches</div>
+    <div class="card-grid">
+      <div class="card"><div class="card-title">🩸 Dark History Facts</div><div class="card-body">Your primary niche. Executions, lost civilisations, forgotten events. High engagement, evergreen, perfect for AI images.</div><span class="card-tag ca">Primary</span><span class="card-tag">£10–18 CPM</span></div>
+      <div class="card"><div class="card-title">💰 Make Money Online</div><div class="card-body">Highest paying niche on YouTube. Advertisers pay premium to reach this audience.</div><span class="card-tag ca">High CPM</span><span class="card-tag">£15–20 CPM</span></div>
+      <div class="card"><div class="card-title">🧠 Psychology Facts</div><div class="card-body">Dark psychology, mind tricks, biases. Evergreen, broad appeal, endless content ideas.</div><span class="card-tag cg">Evergreen</span></div>
+      <div class="card"><div class="card-title">📊 Ranking Videos</div><div class="card-body">Top 5 countdowns — works on any niche. Proven format for high watch-through rates.</div><span class="card-tag ct">Format</span></div>
+    </div>
+    <div class="label">Monetisation roadmap</div>
+    <div class="step-list">
+      <div class="step"><div class="step-num">M1–2</div><div class="step-body"><div class="step-title">Post consistently</div><div class="step-desc">20+ Shorts per month. Learn what gets views. Focus on growth, not monetisation yet.</div></div></div>
+      <div class="step"><div class="step-num">M3–4</div><div class="step-body"><div class="step-title">Hit threshold</div><div class="step-desc">1,000 subs + 10M Shorts views in 90 days. Apply to YouTube Partner Programme.</div></div></div>
+      <div class="step"><div class="step-num">M5–6</div><div class="step-body"><div class="step-title">Add affiliate links</div><div class="step-desc">ElevenLabs, Runway, Canva affiliate links in all descriptions. Passive income on top of AdSense.</div></div></div>
+      <div class="step"><div class="step-num">M6+</div><div class="step-body"><div class="step-title">Second channel + sponsorships</div><div class="step-desc">Launch a second niche channel. Reach out to brands once you have 5K+ subs.</div></div></div>
+    </div>
+  </div>
+  <div id="youtube-methods" class="ipanel">
+  </div>
+  <div id="youtube-notes" class="ipanel">
+    <div class="label">YouTube notes</div>
+    <div class="note-wrap" id="n-youtube" data-note-id="n-youtube" data-placeholder="Channel ideas, video concepts, things to test, AI responses, scripts..."></div>
+  </div>
+</div>
+
+<!-- ═══ FREELANCING ═══ -->
+<div id="page-freelance" class="page">
+  <div class="page-header">
+    <div class="page-title">💼 Freelancing</div>
+    <div class="page-desc">sell your skills — web design, apps, digital work</div>
+  </div>
+  <div class="inner-tabs">
+    <div class="itab active" onclick="itab(this,'freelance','overview')">Overview</div>
+    <div class="itab" onclick="itab(this,'freelance','methods')">Methods</div>
+    <div class="itab" onclick="itab(this,'freelance','websites')">Websites</div>
+    <div class="itab" onclick="itab(this,'freelance','notes')">Notes</div>
+  </div>
+  <div id="freelance-websites" class="ipanel">
+  </div>
+  <div id="freelance-overview" class="ipanel active">
+    <div class="callout callout-blue">
+      <div class="callout-icon">💼</div>
+      <div class="callout-text"><strong>Key insight:</strong> You already build apps and websites. You can sell those skills on freelance platforms with zero upfront cost. Fiverr is the best place to start.</div>
+    </div>
+    <div class="label">What you can offer</div>
+    <div class="card-grid">
+      <div class="card"><div class="card-title">Web Apps</div><div class="card-body">Single-page web apps for businesses — calculators, booking tools, dashboards. £100–£400 each.</div><span class="card-tag cb">High value</span></div>
+      <div class="card"><div class="card-title">Landing Pages</div><div class="card-body">One-page websites for products or businesses. Quick to build, easy to sell. £30–£150 each.</div><span class="card-tag cg">Fast</span></div>
+      <div class="card"><div class="card-title">PWA / Mobile Apps</div><div class="card-body">Progressive web apps that work on phone. Few people offer this. £150–£600 per project.</div><span class="card-tag cp">Premium</span></div>
+      <div class="card"><div class="card-title">Bug Fixing</div><div class="card-body">Fix HTML/CSS/JS bugs in existing sites. High demand, quick turnaround. £15–£80 per fix.</div><span class="card-tag ca">Easy entry</span></div>
+    </div>
+    <div class="label">How it works</div>
+    <div class="step-list">
+      <div class="step"><div class="step-num">01</div><div class="step-body"><div class="step-title">Create your listings</div><div class="step-desc">On Fiverr you create "Gigs" — set what you offer, price, and delivery time. On Upwork you apply to posted jobs.</div></div></div>
+      <div class="step"><div class="step-num">02</div><div class="step-body"><div class="step-title">Get first reviews</div><div class="step-desc">Charge slightly less to land your first 5 reviews. Reviews = everything. After 5 good reviews, raise prices.</div></div></div>
+      <div class="step"><div class="step-num">03</div><div class="step-body"><div class="step-title">Scale up prices</div><div class="step-desc">With 10+ reviews, charge £100–£500 per project. Specialise in one area to charge more.</div></div></div>
+    </div>
+  </div>
+  <div id="freelance-methods" class="ipanel">
+  </div>
+  <div id="freelance-notes" class="ipanel">
+    <div class="label">Freelancing notes</div>
+    <div class="note-wrap" id="n-freelance" data-note-id="n-freelance" data-placeholder="Gig ideas, client leads, pricing notes, proposals..."></div>
+  </div>
+</div>
+
+<!-- ═══ DROPSHIPPING ═══ -->
+<div id="page-dropship" class="page">
+  <div class="page-header">
+    <div class="page-title">📦 Dropshipping</div>
+    <div class="page-desc">sell products online without holding any stock</div>
+  </div>
+  <div class="inner-tabs">
+    <div class="itab active" onclick="itab(this,'dropship','overview')">Overview</div>
+    <div class="itab" onclick="itab(this,'dropship','methods')">Methods</div>
+    <div class="itab" onclick="itab(this,'dropship','websites')">Websites</div>
+    <div class="itab" onclick="itab(this,'dropship','notes')">Notes</div>
+  </div>
+  <div id="dropship-websites" class="ipanel">
+  </div>
+  <div id="dropship-overview" class="ipanel active">
+    <div class="callout callout-orange">
+      <div class="callout-icon">📦</div>
+      <div class="callout-text"><strong>How it works:</strong> You set up an online store. Customer buys from you. You order from a supplier who ships directly to them. You keep the price difference.</div>
+    </div>
+    <div class="label">Two models</div>
+    <div class="card-grid">
+      <div class="card"><div class="card-title">Classic Dropshipping</div><div class="card-body">Find a product, sell in a Shopify store, supplier ships from AliExpress or a UK supplier. You handle customer service and marketing.</div><span class="card-tag co">Physical</span></div>
+      <div class="card"><div class="card-title">Dropcoursing</div><div class="card-body">Sell a digital course or guide. No shipping, near 100% margins, fully automated delivery. The course is the product.</div><span class="card-tag cp">Digital</span><span class="card-tag cg">High margin</span></div>
+    </div>
+    <div class="label">What makes a winning product</div>
+    <div class="card-grid">
+      <div class="card"><div class="card-title">Right price range</div><div class="card-body">£15–£80 sweet spot. Too cheap = tiny margin. Too expensive = hard to sell without reviews.</div></div>
+      <div class="card"><div class="card-title">Solves a problem</div><div class="card-body">Products that fix something sell better than ones that just look nice. Pet gadgets, kitchen tools, posture devices.</div></div>
+      <div class="card"><div class="card-title">Trending but not saturated</div><div class="card-body">Use Minea to find products getting ads now but without 100 stores selling them already.</div></div>
+      <div class="card"><div class="card-title">Works in short video</div><div class="card-body">Can you show the product solving a problem in 15 seconds? That's your TikTok ad.</div></div>
+    </div>
+  </div>
+  <div id="dropship-methods" class="ipanel">
+  </div>
+  <div id="dropship-notes" class="ipanel">
+    <div class="label">Dropshipping notes</div>
+    <div class="note-wrap" id="n-dropship" data-note-id="n-dropship" data-placeholder="Product ideas, supplier notes, store URLs, what's working..."></div>
+  </div>
+</div>
+
+<!-- ═══ TRADING ═══ -->
+<div id="page-trading" class="page">
+  <div class="page-header">
+    <div class="page-title">📈 Trading</div>
+    <div class="page-desc">stocks, crypto, forex — buy and sell assets</div>
+  </div>
+  <div class="inner-tabs">
+    <div class="itab active" onclick="itab(this,'trading','overview')">Overview</div>
+    <div class="itab" onclick="itab(this,'trading','methods')">Methods</div>
+    <div class="itab" onclick="itab(this,'trading','websites')">Websites</div>
+    <div class="itab" onclick="itab(this,'trading','cheatsheet')">Cheat Sheet</div>
+    <div class="itab" onclick="itab(this,'trading','notes')">Notes</div>
+  </div>
+  <div id="trading-overview" class="ipanel active">
+    <div class="callout callout-gold">
+      <div class="callout-icon">📈</div>
+      <div class="callout-text">Buy and sell assets — stocks, crypto, forex — to make a profit. Always start on a demo account and never risk more than you can afford to lose.</div>
+    </div>
+  </div>
+  <div id="trading-methods" class="ipanel"></div>
+  <div id="trading-websites" class="ipanel"></div>
+  <div id="trading-cheatsheet" class="ipanel">
+    <div class="callout callout-gold">
+      <div class="callout-icon">📋</div>
+      <div class="callout-text">Trading analysis and chart patterns reference sheet.</div>
+    </div>
+    <img src="Trading_analysis_and_chart_patterns_overview.png" style="width:100%;border-radius:10px;border:1px solid var(--border);">
+  </div>
+  <div id="trading-notes" class="ipanel">
+    <div class="label">Trading notes</div>
+    <div class="note-wrap" id="n-trading" data-note-id="n-trading" data-placeholder="Strategy notes, trade ideas, platforms to research..."></div>
+  </div>
+</div>
+
+<!-- ═══ SELLING PRODUCTS ═══ -->
+<div id="page-products" class="page">
+  <div class="page-header">
+    <div class="page-title">🛍️ Selling Products</div>
+    <div class="page-desc">make once, sell unlimited times — digital products</div>
+  </div>
+  <div class="inner-tabs">
+    <div class="itab active" onclick="itab(this,'products','overview')">Overview</div>
+    <div class="itab" onclick="itab(this,'products','methods')">Methods</div>
+    <div class="itab" onclick="itab(this,'products','websites')">Websites</div>
+    <div class="itab" onclick="itab(this,'products','notes')">Notes</div>
+  </div>
+  <div id="products-websites" class="ipanel">
+  </div>
+  <div id="products-overview" class="ipanel active">
+    <div class="callout callout-green">
+      <div class="callout-icon">🛍️</div>
+      <div class="callout-text"><strong>Best model for you:</strong> Digital products — no shipping, no stock, instant delivery. Make a template, guide, preset, or tool once and sell it forever.</div>
+    </div>
+    <div class="label">What to sell</div>
+    <div class="card-grid">
+      <div class="card"><div class="card-title">Templates</div><div class="card-body">Notion, Canva, website templates. Easy to make, high demand. Sell on Gumroad or Etsy for £5–£40.</div><span class="card-tag cg">Easy start</span></div>
+      <div class="card"><div class="card-title">Guides & Ebooks</div><div class="card-body">Teach what you know — AI tools, YouTube Shorts, web apps. PDF format, sell for £5–£30.</div><span class="card-tag cb">Low effort</span></div>
+      <div class="card"><div class="card-title">Presets & Assets</div><div class="card-body">CapCut templates, Lightroom presets, fonts, icons, sound packs. Big market on Creative Market.</div><span class="card-tag ca">Passive</span></div>
+      <div class="card"><div class="card-title">Web Tools</div><div class="card-body">Build a useful tool and charge access. £3–£10/month from 100 users = £300–£1K/month recurring.</div><span class="card-tag cp">Recurring</span></div>
+      <div class="card"><div class="card-title">Mini Courses</div><div class="card-body">4–8 video course on one skill. Sell on Gumroad or Teachable for £20–£100.</div><span class="card-tag ct">High value</span></div>
+      <div class="card"><div class="card-title">Prompt Packs</div><div class="card-body">Packs of AI prompts for image gen, scriptwriting. Growing market. Easy to make. £5–£25 per pack.</div><span class="card-tag co">Trending</span></div>
+    </div>
+  </div>
+  <div id="products-methods" class="ipanel">
+  </div>
+  <div id="products-notes" class="ipanel">
+    <div class="label">Products notes</div>
+    <div class="note-wrap" id="n-products" data-note-id="n-products" data-placeholder="Product ideas, what to make first, pricing, platform notes..."></div>
+  </div>
+</div>
+
+<!-- ═══ CLOTHING ═══ -->
+<div id="page-clothing" class="page">
+  <div class="page-header">
+    <div class="page-title">👕 Selling Clothing</div>
+    <div class="page-desc">print-on-demand — design it, they print and ship it</div>
+  </div>
+  <div class="inner-tabs">
+    <div class="itab active" onclick="itab(this,'clothing','overview')">Overview</div>
+    <div class="itab" onclick="itab(this,'clothing','methods')">Methods</div>
+    <div class="itab" onclick="itab(this,'clothing','websites')">Websites</div>
+    <div class="itab" onclick="itab(this,'clothing','notes')">Notes</div>
+  </div>
+  <div id="clothing-websites" class="ipanel">
+  </div>
+  <div id="clothing-overview" class="ipanel active">
+    <div class="callout callout-pink">
+      <div class="callout-icon">👕</div>
+      <div class="callout-text"><strong>How it works:</strong> You upload a design. When someone orders, the company prints it on a t-shirt/hoodie and ships it direct to the customer. You never touch the product.</div>
+    </div>
+    <div class="label">How income works</div>
+    <div class="card-grid">
+      <div class="card"><div class="card-title">You set the margin</div><div class="card-body">Platform charges a base cost (e.g. £10/shirt). You set retail price (e.g. £25). You keep £15 profit per sale automatically.</div><span class="card-tag cg">Passive</span></div>
+      <div class="card"><div class="card-title">No stock, no risk</div><div class="card-body">You only pay when someone orders. No upfront stock. No risk of unsold items sitting in a warehouse.</div><span class="card-tag ca">Low risk</span></div>
+      <div class="card"><div class="card-title">Niche designs win</div><div class="card-body">Generic designs don't sell. Target a specific community — dark history fans, gamers, gym people, dog owners.</div><span class="card-tag cb">Strategy</span></div>
+    </div>
+    <div class="label">What sells</div>
+    <div class="step-list">
+      <div class="step"><div class="step-num">✓</div><div class="step-body"><div class="step-title">Simple text-based designs</div><div class="step-desc">Minimal typography with a niche phrase. E.g. "I survived the algorithm" for YouTube creators. Easy to make in Canva.</div></div></div>
+      <div class="step"><div class="step-num">✓</div><div class="step-body"><div class="step-title">Funny niche humour</div><div class="step-desc">Inside jokes for a specific community. Dog owners, programmers, teachers — people share these and buy as gifts.</div></div></div>
+      <div class="step"><div class="step-num">✓</div><div class="step-body"><div class="step-title">Aesthetic / minimalist</div><div class="step-desc">Clean, stylish designs that look like a real brand. Sells well with good mockup photos.</div></div></div>
+    </div>
+  </div>
+  <div id="clothing-methods" class="ipanel">
+  </div>
+  <div id="clothing-notes" class="ipanel">
+    <div class="label">Clothing notes</div>
+    <div class="note-wrap" id="n-clothing" data-note-id="n-clothing" data-placeholder="Design ideas, niche targets, what's selling, platform notes..."></div>
+  </div>
+</div>
+
+<!-- ═══ BUILDING APPS ═══ -->
+<div id="page-apps" class="page">
+  <div class="page-header">
+    <div class="page-title">📱 Building Apps</div>
+    <div class="page-desc">turn your dev skills into income</div>
+  </div>
+  <div class="inner-tabs">
+    <div class="itab active" onclick="itab(this,'apps','overview')">Overview</div>
+    <div class="itab" onclick="itab(this,'apps','methods')">Methods</div>
+    <div class="itab" onclick="itab(this,'apps','websites')">Websites</div>
+    <div class="itab" onclick="itab(this,'apps','notes')">Notes</div>
+  </div>
+  <div id="apps-websites" class="ipanel">
+  </div>
+  <div id="apps-overview" class="ipanel active">
+    <div class="callout callout-purple">
+      <div class="callout-icon">📱</div>
+      <div class="callout-text"><strong>You already do this:</strong> BuzzIn!, GainTracker, AvailabilityPlanner, StudyPulse, Analysis AI — all real apps. Now learn how to turn that into income.</div>
+    </div>
+    <div class="label">Ways to make money</div>
+    <div class="card-grid">
+      <div class="card"><div class="card-title">Sell the App</div><div class="card-body">Build a useful tool and sell it on Flippa or CodeCanyon. Simple apps sell for £100–£2,000.</div><span class="card-tag ca">One-time</span></div>
+      <div class="card"><div class="card-title">Subscription Model</div><div class="card-body">Charge £3–£10/month for access. 100 users = £300–£1K/month recurring. BuzzIn! could have a premium tier.</div><span class="card-tag cg">Recurring</span></div>
+      <div class="card"><div class="card-title">Freelance Builds</div><div class="card-body">Build custom apps for clients. £200–£2,000 per project. Easy to find on Upwork and Fiverr.</div><span class="card-tag cb">Service</span></div>
+      <div class="card"><div class="card-title">Sell on Marketplaces</div><div class="card-body">List on CodeCanyon (Envato). They handle payments. 50–70% of each sale. Passive once listed.</div><span class="card-tag cp">Passive</span></div>
+    </div>
+  </div>
+  <div id="apps-methods" class="ipanel">
+  </div>
+  <div id="apps-notes" class="ipanel">
+    <div class="label">App building notes</div>
+    <div class="note-wrap" id="n-apps" data-note-id="n-apps" data-placeholder="App ideas, monetisation plans, client leads, feature ideas..."></div>
+  </div>
+</div>
+
+<!-- ═══ BUILDING WEBSITES ═══ -->
+<div id="page-websites" class="page">
+  <div class="page-header">
+    <div class="page-title">🌐 Building Websites</div>
+    <div class="page-desc">build websites for businesses and get paid</div>
+  </div>
+  <div class="inner-tabs">
+    <div class="itab active" onclick="itab(this,'websites','overview')">Overview</div>
+    <div class="itab" onclick="itab(this,'websites','methods')">Methods</div>
+    <div class="itab" onclick="itab(this,'websites','websites')">Websites</div>
+    <div class="itab" onclick="itab(this,'websites','notes')">Notes</div>
+  </div>
+  <div id="websites-websites" class="ipanel">
+  </div>
+  <div id="websites-overview" class="ipanel active">
+    <div class="callout callout-teal">
+      <div class="callout-icon">🌐</div>
+      <div class="callout-text"><strong>Big opportunity:</strong> Millions of small local businesses have no website or a terrible one. They'll pay £200–£1,500 for a professional site. You can build one in a day.</div>
+    </div>
+    <div class="label">Types of clients</div>
+    <div class="card-grid">
+      <div class="card"><div class="card-title">Local Businesses</div><div class="card-body">Restaurants, plumbers, salons, gyms — need sites but don't know how. Find them on Google Maps.</div><span class="card-tag ct">Easy to find</span></div>
+      <div class="card"><div class="card-title">Startups</div><div class="card-body">New businesses need a quick professional presence. Find on LinkedIn. Often pay more than local businesses.</div><span class="card-tag cb">Higher pay</span></div>
+      <div class="card"><div class="card-title">Landing Pages</div><div class="card-body">One-page sites for a product or campaign. Quick to build (1–2 days), charge £100–£300 each.</div><span class="card-tag cg">Fast</span></div>
+    </div>
+    <div class="label">Pricing guide</div>
+    <div class="card-grid">
+      <div class="card"><div class="card-title">Basic landing page</div><div class="card-body">1 page, contact form, mobile-friendly. Build time: 4–8 hours.</div><span class="card-tag">£80–£200</span></div>
+      <div class="card"><div class="card-title">Small business site</div><div class="card-body">Home, About, Services, Contact pages. Build time: 1–2 days.</div><span class="card-tag">£200–£600</span></div>
+      <div class="card"><div class="card-title">Custom web app</div><div class="card-body">Interactive features, bookings, dashboards. Build time: 3–7 days.</div><span class="card-tag">£500–£2,000</span></div>
+    </div>
+  </div>
+  <div id="websites-methods" class="ipanel">
+  </div>
+  <div id="websites-notes" class="ipanel">
+    <div class="label">Website business notes</div>
+    <div class="note-wrap" id="n-websites" data-note-id="n-websites" data-placeholder="Client leads, portfolio ideas, pricing decisions, proposals..."></div>
+  </div>
+</div>
+
+<!-- ═══ AI TOOLS ═══ -->
+<div id="page-aitools" class="page">
+  <div class="page-header">
+    <div class="page-title">🤖 AI Tools</div>
+    <div class="page-desc">the best free tools — all in one place</div>
+  </div>
+  <div class="inner-tabs">
+    <div class="itab active" onclick="itab(this,'aitools','overview')">Overview</div>
+    <div class="itab" onclick="itab(this,'aitools','websites')">Websites</div>
+    <div class="itab" onclick="itab(this,'aitools','notes')">Notes</div>
+  </div>
+  <div id="aitools-websites" class="ipanel">
+  </div>
+  <div id="aitools-overview" class="ipanel active">
+    <div class="callout callout-gold">
+      <div class="callout-icon">🤖</div>
+      <div class="callout-text"><strong>Master these tools</strong> and you can do almost any online income method for free. The Methods tab has all links organised by category.</div>
+    </div>
+    <div class="label">Tool categories</div>
+    <div class="card-grid">
+      <div class="card"><div class="card-title">Writing & Scripts</div><div class="card-body">Claude, Gemini, ChatGPT — for scripts, prompts, email copy, product descriptions, everything.</div><span class="card-tag cb">Free</span></div>
+      <div class="card"><div class="card-title">Image Generation</div><div class="card-body">Runway ML (Nano Banana 2), Ideogram, Leonardo AI. Cinematic images for Shorts.</div><span class="card-tag ck">Free tiers</span></div>
+      <div class="card"><div class="card-title">Video Generation</div><div class="card-body">Luma AI, Kling AI, Pika, Hailuo — animate images into clips. Rotate to preserve free credits.</div><span class="card-tag cp">Free tiers</span></div>
+      <div class="card"><div class="card-title">Voiceover</div><div class="card-body">ElevenLabs — 10k characters/month free. Sounds completely human.</div><span class="card-tag cg">Free tier</span></div>
+      <div class="card"><div class="card-title">Design & Editing</div><div class="card-body">Canva for designs, CapCut for video editing, Remove.bg for backgrounds.</div><span class="card-tag ca">Free</span></div>
+      <div class="card"><div class="card-title">Automation</div><div class="card-body">Make.com, n8n, Zapier — connect tools together and automate repetitive tasks.</div><span class="card-tag ct">Free tiers</span></div>
+    </div>
+  </div>
+  <div id="aitools-websites" class="ipanel">
+  </div>
+  <div id="aitools-notes" class="ipanel">
+    <div class="label">AI tools notes</div>
+    <div class="note-wrap" id="n-aitools" data-note-id="n-aitools" data-placeholder="Prompts that work well, tips per tool, workflow ideas..."></div>
+  </div>
+</div>
+
+</main>
+</div><!-- end .layout -->
+
+<script>
+// Sidebar toggle
+function toggleSidebar() {
+  document.querySelector('.sidebar').classList.toggle('collapsed');
+}
+function go(page) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const el = document.getElementById('page-' + page);
+  if (el) el.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => {
+    if (n.getAttribute('onclick') === `go('${page}')`) n.classList.add('active');
+  });
+  document.querySelector('.main').scrollTo(0, 0);
+}
+
+// Inner tab switching
+function itab(btn, section, panel) {
+  btn.closest('.inner-tabs').querySelectorAll('.itab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  const page = document.getElementById('page-' + section);
+  page.querySelectorAll('.ipanel').forEach(p => p.classList.remove('active'));
+  const target = document.getElementById(section + '-' + panel);
+  if (target) target.classList.add('active');
+  document.querySelector('.main').scrollTo(0, 0);
+}
+
+// ── RICH NOTES ──
+const NOTE_IDS = ['n-general','n-youtube','n-freelance','n-dropship','n-products','n-clothing','n-apps','n-websites','n-aitools'];
+
+function buildEditor(id, placeholder) {
+  const wrap = document.getElementById(id);
+  if (!wrap) return;
+  wrap.innerHTML = `
+    <div class="note-toolbar" id="${id}-toolbar">
+      <button onclick="noteCmd('${id}','h1')">H Heading</button>
+      <button onclick="noteCmd('${id}','h2')">H2 Sub</button>
+      <button onclick="noteCmd('${id}','p')">Normal</button>
+      <button onclick="noteCmd('${id}','li')">• Bullet</button>
+      <button class="done-btn" onclick="toggleEdit('${id}',false)">✓ Done</button>
+    </div>
+    <div class="note-area" id="${id}-editor" contenteditable="false" data-placeholder="${placeholder}"></div>
+    <div style="display:flex;align-items:center;gap:10px;margin-top:6px">
+      <div class="save-label" id="${id}-lbl">autosaved</div>
+      <button class="note-toolbar" style="margin:0;background:none;border:none;padding:0" onclick="toggleEdit('${id}',true)">
+        <button class="edit-btn" style="margin-left:0" onclick="toggleEdit('${id}',true)">✏ Edit</button>
+      </button>
+    </div>`;
+
+  // Fix: just have one edit button outside toolbar nesting
+  wrap.innerHTML = `
+    <div class="note-toolbar" id="${id}-toolbar" style="display:none">
+      <button onclick="noteCmd('${id}','h1')">H Heading</button>
+      <button onclick="noteCmd('${id}','h2')">H2 Sub</button>
+      <button onclick="noteCmd('${id}','p')">Normal</button>
+      <button onclick="noteCmd('${id}','li')">• Bullet</button>
+      <button class="done-btn" onclick="toggleEdit('${id}',false)">✓ Done</button>
+    </div>
+    <div class="note-area" id="${id}-editor" contenteditable="false" data-placeholder="${placeholder}"></div>
+    <div style="display:flex;align-items:center;gap:10px;margin-top:6px">
+      <div class="save-label" id="${id}-lbl">autosaved</div>
+      <button id="${id}-editbtn" class="note-toolbar" style="margin:0;padding:0;border:none;background:none;display:flex" onclick="toggleEdit('${id}',true)"><button class="edit-btn" style="margin:0" onclick="toggleEdit('${id}',true)">✏ Edit</button></button>
+    </div>`;
+
+  const editor = document.getElementById(id+'-editor');
+  try {
+    const saved = localStorage.getItem('rich_'+id);
+    if (saved) editor.innerHTML = saved;
+  } catch(e){}
+
+  editor.addEventListener('input', () => {
+    try { localStorage.setItem('rich_'+id, editor.innerHTML); } catch(e){}
+    const lbl = document.getElementById(id+'-lbl');
+    if (lbl) { lbl.textContent = 'saved ✓'; lbl.classList.add('ok'); setTimeout(()=>{ lbl.textContent='autosaved'; lbl.classList.remove('ok'); },1500); }
+  });
+}
+
+function toggleEdit(id, editing) {
+  const editor = document.getElementById(id+'-editor');
+  const toolbar = document.getElementById(id+'-toolbar');
+  const editBtn = document.getElementById(id+'-editbtn');
+  if (!editor) return;
+  editor.contentEditable = editing ? 'true' : 'false';
+  if (toolbar) toolbar.style.display = editing ? 'flex' : 'none';
+  if (editBtn) editBtn.style.display = editing ? 'none' : 'flex';
+  if (editing) { editor.focus(); try { const r=document.createRange(); r.selectNodeContents(editor); r.collapse(false); const s=window.getSelection(); s.removeAllRanges(); s.addRange(r); } catch(e){} }
+}
+
+function noteCmd(id, tag) {
+  const editor = document.getElementById(id+'-editor');
+  if (!editor) return;
+  editor.focus();
+  const sel = window.getSelection();
+  if (!sel.rangeCount) { 
+    // No selection — append new block at end
+    const el = document.createElement(tag==='li'?'ul':tag);
+    if (tag==='li') { const li=document.createElement('li'); li.innerHTML='<br>'; el.appendChild(li); }
+    else el.innerHTML = '<br>';
+    editor.appendChild(el);
+    const target = tag==='li' ? el.querySelector('li') : el;
+    const r=document.createRange(); r.setStart(target,0); r.collapse(true);
+    sel.removeAllRanges(); sel.addRange(r);
+    editor.dispatchEvent(new Event('input'));
+    return;
+  }
+  const range = sel.getRangeAt(0);
+  let node = range.startContainer;
+  if (node.nodeType===3) node = node.parentElement;
+  const block = node.closest('h1,h2,p,li,ul') || (editor.contains(node) ? node : null);
+
+  if (tag === 'li') {
+    const li = document.createElement('li');
+    li.innerHTML = (block && block!==editor) ? (block.tagName==='UL'?'<br>':block.innerHTML) : '<br>';
+    if (block && block!==editor) {
+      if (block.tagName==='UL') { block.appendChild(li); }
+      else { const ul=document.createElement('ul'); ul.appendChild(li); block.replaceWith(ul); }
+    } else { const ul=document.createElement('ul'); ul.appendChild(li); editor.appendChild(ul); }
+    const r=document.createRange(); r.setStart(li,0); r.collapse(true);
+    sel.removeAllRanges(); sel.addRange(r);
+  } else {
+    const el = document.createElement(tag);
+    el.innerHTML = (block && block!==editor) ? block.innerHTML : '<br>';
+    if (block && block!==editor) {
+      const ul=block.closest('ul');
+      if (ul) ul.replaceWith(el); else block.replaceWith(el);
+    } else editor.appendChild(el);
+    const r=document.createRange(); r.setStart(el,0); r.collapse(true);
+    sel.removeAllRanges(); sel.addRange(r);
+  }
+  editor.dispatchEvent(new Event('input'));
+}
+
+// ── GOAL TRACKER ──
+let goalPeriod = 'weekly';
+function setGoalPeriod(period, btn) {
+  goalPeriod = period;
+  document.querySelectorAll('.gpt').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  loadGoal();
+}
+function saveGoal() {
+  const target = parseFloat(document.getElementById('goal-input-target').value) || 0;
+  const earned = parseFloat(document.getElementById('goal-input-earned').value) || 0;
+  try { localStorage.setItem('goal_'+goalPeriod, JSON.stringify({target, earned})); } catch(e){}
+  renderGoal(target, earned);
+}
+function loadGoal() {
+  try {
+    const d = JSON.parse(localStorage.getItem('goal_'+goalPeriod)||'{}');
+    const target = d.target || 0;
+    const earned = d.earned || 0;
+    document.getElementById('goal-input-target').value = target || '';
+    document.getElementById('goal-input-earned').value = earned || '';
+    renderGoal(target, earned);
+  } catch(e){}
+}
+function renderGoal(target, earned) {
+  document.getElementById('goal-target-val').textContent = target.toLocaleString();
+  document.getElementById('goal-earned-val').textContent = earned.toLocaleString();
+  const pct = target > 0 ? Math.min(Math.round((earned/target)*100), 100) : 0;
+  document.getElementById('goal-bar-earned').style.width = pct + '%';
+  document.getElementById('goal-pct').textContent = pct + '%';
+  // Colour: red < 33%, amber < 66%, green >= 66%
+  const bar = document.getElementById('goal-bar-earned');
+  bar.style.background = pct >= 66 ? 'var(--green)' : pct >= 33 ? 'var(--gold)' : 'var(--red)';
+}
+
+
+window.addEventListener('load', () => {
+  document.querySelectorAll('.note-wrap[data-note-id]').forEach(wrap => {
+    buildEditor(wrap.dataset.noteId, wrap.dataset.placeholder || 'Start typing...');
+  });
+  loadGoal();
+});
+
+// Extractor
+let extCat = 'general', extResult = '';
+const catLabels = { general: 'making money online', youtube: 'YouTube channel growth and monetisation', freelance: 'freelancing and selling services online', dropship: 'dropshipping and ecommerce', products: 'selling digital products', apps: 'building and selling apps', tools: 'tools, platforms and resources', income: 'online income methods and strategies' };
+function selCat(btn) { document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('sel')); btn.classList.add('sel'); extCat = btn.dataset.cat; }
+async function runExtract() {
+  const text = document.getElementById('ext-input').value.trim();
+  if (!text) return alert('Paste some content first!');
+  const btn = document.getElementById('ext-btn');
+  const prog = document.getElementById('prog');
+  const fill = document.getElementById('prog-fill');
+  btn.disabled = true; btn.textContent = 'Extracting...';
+  prog.classList.add('show'); fill.style.width = '0';
+  let w = 0;
+  const iv = setInterval(() => { w = Math.min(w + Math.random() * 12, 88); fill.style.width = w + '%'; }, 300);
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1000, messages: [{ role: 'user', content: `You are an expert at extracting actionable business advice. Extract the most useful, specific, and actionable information about ${catLabels[extCat]} from the following content.\n\nFocus on:\n- Specific steps, strategies, or methods mentioned\n- Tools, platforms, or websites named (include URLs if mentioned)\n- Numbers, prices, timelines, or stats given\n- Tips that are immediately actionable\n\nFormat as clear sections with headers. Be concise and specific. Ignore filler.\n\nContent:\n---\n${text.slice(0, 8000)}` }] }) });
+    const data = await res.json();
+    extResult = data.content?.map(i => i.text || '').join('\n') || 'No response received.';
+    clearInterval(iv); fill.style.width = '100%';
+    setTimeout(() => { prog.classList.remove('show'); fill.style.width = '0'; }, 600);
+    document.getElementById('ext-text').textContent = extResult;
+    document.getElementById('ext-result').classList.add('show');
+    document.getElementById('ext-result').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } catch(e) {
+    clearInterval(iv); prog.classList.remove('show');
+    document.getElementById('ext-text').textContent = 'Error: ' + e.message;
+    document.getElementById('ext-result').classList.add('show');
+  }
+  btn.disabled = false;
+  btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Extract & Organise`;
+}
+function copyResult() { navigator.clipboard.writeText(extResult).then(() => alert('Copied!')); }
+function clearExt() { document.getElementById('ext-input').value = ''; document.getElementById('ext-result').classList.remove('show'); extResult = ''; }
+
+function saveExtractToSection() {
+  const section = document.getElementById('ext-save-section').value;
+  const tab = document.getElementById('ext-save-tab').value;
+  if (!section) return alert('Pick a section first.');
+  if (!extResult) return alert('Nothing to save — run Extract first.');
+
+  if (tab === 'notes') {
+    // Append to the section's rich note editor
+    const editorId = 'n-' + section + '-0-editor';
+    const editor = document.getElementById(editorId);
+    if (editor) {
+      // Append as a paragraph block
+      const p = document.createElement('p');
+      p.textContent = extResult;
+      editor.appendChild(p);
+      try { localStorage.setItem('rich_n-' + section + '-0', editor.innerHTML); } catch(e){}
+    } else {
+      // Fallback: save to localStorage directly
+      try {
+        const existing = localStorage.getItem('rich_n-' + section + '-0') || '';
+        localStorage.setItem('rich_n-' + section + '-0', existing + '<p>' + extResult.replace(/\n/g,'</p><p>') + '</p>');
+      } catch(e){}
+    }
+  } else if (tab === 'methods') {
+    // Save as a custom method
+    const arr = getMethods(section);
+    arr.push({ title: 'Extracted: ' + new Date().toLocaleDateString('en-GB'), desc: extResult.slice(0, 500) });
+    saveMethods(section, arr);
+    renderCustomMethods(section);
+  } else if (tab === 'websites') {
+    // Not ideal for websites but save as a note fallback
+    const arr = getMethods(section);
+    arr.push({ title: 'Extracted info', desc: extResult.slice(0, 500) });
+    saveMethods(section, arr);
+  }
+
+  // Show confirmation
+  const msg = document.getElementById('ext-save-msg');
+  msg.style.display = 'inline';
+  setTimeout(() => msg.style.display = 'none', 2500);
+}
+
+
+// ── CUSTOM SITES & METHODS ──
+const SECTIONS = ['youtube','freelance','dropship','trading','products','clothing','apps','websites','aitools'];
+
+function getSites(section) {
+  try { return JSON.parse(localStorage.getItem('custom_sites_'+section)||'[]'); } catch(e){ return []; }
+}
+function saveSites(section, arr) {
+  try { localStorage.setItem('custom_sites_'+section, JSON.stringify(arr)); } catch(e){}
+}
+function getMethods(section) {
+  try { return JSON.parse(localStorage.getItem('custom_methods_'+section)||'[]'); } catch(e){ return []; }
+}
+function saveMethods(section, arr) {
+  try { localStorage.setItem('custom_methods_'+section, JSON.stringify(arr)); } catch(e){}
+}
+
+function renderCustomSites(section) {
+  const container = document.getElementById('custom-sites-'+section);
+  if (!container) return;
+  const sites = getSites(section);
+  container.innerHTML = sites.map((s,i) => `
+    <a class="site-card" href="${s.url}" target="_blank">
+      <button class="del-btn" onclick="delSite(event,'${section}',${i})">✕ remove</button>
+      <div class="site-card-name">${s.name}</div>
+      <div class="site-card-desc">${s.desc}</div>
+      <div class="site-card-url">${s.url.replace(/^https?:\/\//,'')}</div>
+    </a>`).join('');
+}
+
+function addSite(section) {
+  const name = document.getElementById('si-name-'+section).value.trim();
+  const url  = document.getElementById('si-url-'+section).value.trim();
+  const desc = document.getElementById('si-desc-'+section).value.trim();
+  if (!name || !url) return alert('Name and URL are required.');
+  const full = url.startsWith('http') ? url : 'https://'+url;
+  const arr = getSites(section);
+  arr.push({name, url: full, desc});
+  saveSites(section, arr);
+  renderCustomSites(section);
+  document.getElementById('si-name-'+section).value = '';
+  document.getElementById('si-url-'+section).value = '';
+  document.getElementById('si-desc-'+section).value = '';
+}
+
+function delSite(e, section, i) {
+  e.preventDefault(); e.stopPropagation();
+  const arr = getSites(section);
+  arr.splice(i,1);
+  saveSites(section, arr);
+  renderCustomSites(section);
+}
+
+function renderCustomMethods(section) {
+  const container = document.getElementById('custom-methods-'+section);
+  if (!container) return;
+  const methods = getMethods(section);
+  container.innerHTML = methods.map((m,i) => `
+    <div class="method">
+      <div class="method-header">
+        <div class="method-title">${m.title}</div>
+        <button class="method-del" onclick="delMethod('${section}',${i})">✕ remove</button>
+      </div>
+      <div class="method-desc">${m.desc}</div>
+    </div>`).join('');
+}
+
+function addMethod(section) {
+  const title = document.getElementById('me-title-'+section).value.trim();
+  const desc  = document.getElementById('me-desc-'+section).value.trim();
+  if (!title) return alert('Title is required.');
+  const arr = getMethods(section);
+  arr.push({title, desc});
+  saveMethods(section, arr);
+  renderCustomMethods(section);
+  document.getElementById('me-title-'+section).value = '';
+  document.getElementById('me-desc-'+section).value = '';
+}
+
+function delMethod(section, i) {
+  const arr = getMethods(section);
+  arr.splice(i,1);
+  saveMethods(section, arr);
+  renderCustomMethods(section);
+}
+
+// Inject add-forms into every section's websites and methods panels
+function injectForms() {
+  SECTIONS.forEach(sec => {
+    // Websites panel
+    const wp = document.getElementById(sec+'-websites');
+    if (wp) {
+      wp.insertAdjacentHTML('beforeend', `
+        <div class="label" style="margin-top:28px">Your saved sites</div>
+        <div class="site-grid" id="custom-sites-${sec}"></div>
+        <div class="label">Add a site</div>
+        <div class="add-form">
+          <input class="add-input" id="si-name-${sec}" placeholder="Name (e.g. Fiverr)">
+          <input class="add-input" id="si-url-${sec}" placeholder="URL (e.g. fiverr.com)">
+          <input class="add-input" id="si-desc-${sec}" placeholder="Description (optional)">
+          <button class="add-btn" onclick="addSite('${sec}')">+ Add</button>
+        </div>`);
+      renderCustomSites(sec);
+    }
+    // Methods panel
+    const mp = document.getElementById(sec+'-methods');
+    if (mp) {
+      mp.insertAdjacentHTML('beforeend', `
+        <div class="label" style="margin-top:28px">Your custom methods</div>
+        <div id="custom-methods-${sec}"></div>
+        <div class="label">Add a method</div>
+        <div class="add-form">
+          <input class="add-input" id="me-title-${sec}" placeholder="Title">
+          <input class="add-input" id="me-desc-${sec}" placeholder="Description">
+          <button class="add-btn" onclick="addMethod('${sec}')">+ Add</button>
+        </div>`);
+      renderCustomMethods(sec);
+    }
+  });
+}
+
+window.addEventListener('load', () => {
+  ['n-general','n-goals','n-extract','n-youtube','n-freelance','n-dropship','n-products','n-clothing','n-apps','n-websites','n-aitools'].forEach(id => {
+    try { const s = localStorage.getItem('hub_' + id); if (s && document.getElementById(id)) document.getElementById(id).value = s; } catch(e) {}
+  });
+  injectForms();
+});
+
+</script>
+</body>
+</html>
